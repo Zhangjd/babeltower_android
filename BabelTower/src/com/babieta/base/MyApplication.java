@@ -6,7 +6,6 @@ import com.avos.avoscloud.AVInstallation;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.PushService;
 import com.avos.avoscloud.SaveCallback;
-import com.babieta.activity.MainActivity;
 import com.babieta.activity.PushCallBackActivity;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -17,10 +16,10 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+// 应用程序入口在这里
 public class MyApplication extends Application {
 	@Override
 	public void onCreate() { // onCreate负责对所有全局变量赋初期值
-		// TODO Auto-generated method stub
 		super.onCreate();
 		initLeanCloud();
 		initImageLoader(getApplicationContext());
@@ -56,12 +55,12 @@ public class MyApplication extends Application {
 		// testObject.put("foo", "bar");
 		// testObject.saveInBackground();
 	}
-	
-	
+
 	public static void initImageLoader(Context context) {
-		// This configuration tuning is custom. You can tune every option, you may tune some of them,
+		// This configuration tuning is custom. You can tune every option, you
+		// may tune some of them,
 		// or you can create default configuration by
-		//  ImageLoaderConfiguration.createDefault(this);
+		// ImageLoaderConfiguration.createDefault(this);
 		// method.
 		ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(context);
 		config.threadPriority(Thread.NORM_PRIORITY - 2);

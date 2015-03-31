@@ -48,7 +48,7 @@
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:layout_marginTop="40dp"
-        android:text="提交" />
+        android:text="@string/feedback_submit" />
 
     <TextView
         android:id="@+id/feedback_textview"

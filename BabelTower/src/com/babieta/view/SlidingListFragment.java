@@ -10,7 +10,6 @@ import com.babieta.activity.MainActivity;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -19,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -81,8 +79,6 @@ public class SlidingListFragment extends ListFragment {
 	}
 
 	private class MySimpleAdapter extends SimpleAdapter {
-		private Context context;
-
 		private int selectedPosition = 0;// 选中的位置
 
 		public void setSelectedPosition(int position) {
@@ -92,7 +88,6 @@ public class SlidingListFragment extends ListFragment {
 		public MySimpleAdapter(Context context, List<? extends Map<String, ?>> data, int resource,
 				String[] from, int[] to) {
 			super(context, data, resource, from, to);
-			this.context = context;
 		}
 
 		@Override

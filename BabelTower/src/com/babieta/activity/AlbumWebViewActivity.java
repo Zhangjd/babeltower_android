@@ -38,15 +38,16 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 
 	private ProgressDialog mProgressDialog;
 
-	private String itemURL;
-	private String imgURL;
-	private String tag;
-
+	private int id = 0;
+	private String itemURL = "";
+	private String imgURL = "";
 	private String title = "";
 	private String content_type = "";
 	private String author = "";
+	private String created_at = "";
 	private String updated_at = "";
 	private String description = "";
+
 	private int albumId = 0;
 	private int like = 0;
 	private int views = 0;
@@ -79,13 +80,15 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
-		content_type = bundle.getString("content_type");
-		itemURL = bundle.getString("itemURL");
-		imgURL = bundle.getString("ImageURL");
-		author = bundle.getString("author");
-		updated_at = bundle.getString("updated_at");
-		title = bundle.getString("title");
-		description = bundle.getString("description");
+		id = bundle.getInt("id", 0);
+		content_type = bundle.getString("content_type", " ");
+		itemURL = bundle.getString("itemURL", " ");
+		imgURL = bundle.getString("ImageURL", " ");
+		author = bundle.getString("author", " ");
+		created_at = bundle.getString("created_at", " ");
+		updated_at = bundle.getString("updated_at", " ");
+		title = bundle.getString("title", " ");
+		description = bundle.getString("description", " ");
 
 		initEventsRegister();
 
@@ -182,6 +185,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 	}
 
 	// 监听
+	@SuppressLint("SetJavaScriptEnabled")
 	public class MyWebViewClient extends WebViewClient {
 
 		@Override
@@ -205,9 +209,9 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 
 	private void initEventsRegister() {
 		this.likeButton = (Button) findViewById(R.id.bottombar_like);
-		this.likeTextView = (TextView) findViewById(R.id.bottombar_like_textview);
+		this.likeTextView = (TextView) findViewById(R.id.bottombar_like_counter);
 		this.collectButton = (Button) findViewById(R.id.bottombar_collect);
-		this.colletTextView = (TextView) findViewById(R.id.bottombar_collect_textview);
+		this.colletTextView = (TextView) findViewById(R.id.bottombar_pageview_counter);
 		this.backButton = (ImageButton) findViewById(R.id.back_button);
 
 		// find collections
@@ -306,14 +310,13 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 	private void handleCollect() {
 		if (collectFlag == 1) { // 取消收藏
 			String[] collectSet = S.getStringSet(getApplicationContext(), "collected_list");
-			System.out.println("取消收藏,当前url" + itemURL + "当前长度" + collectSet.length);
 			String regularEx = S.regularEx;
 			Boolean status = false;
 			String tmp_all = "";
 			for (int i = 1; i < collectSet.length; i++) {
-				if (collectSet[i].equals(itemURL)) {
+				if ((i + 1) < collectSet.length && collectSet[i + 1].equals(itemURL)) {
 					status = true;
-					i = i + 6; // 算上i++,跳过7个
+					i = i + 8; // 算上i++,跳过9个
 					continue;
 				}
 				tmp_all = tmp_all + regularEx + collectSet[i];
@@ -330,26 +333,26 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 				System.out.println("取消收藏失败");
 			}
 		} else { // 收藏
-
-			System.out.println("收藏");
-
-			Boolean status = S.addStringSet(getApplicationContext(), "collected_list", itemURL);
+			Boolean status = S.addStringSet(getApplicationContext(), "collected_list",
+					String.valueOf(id));
 
 			if (status) {
 				collectFlag = 1;
 				collectButton.setBackgroundResource(R.drawable.news_collected);
 
-				TextView collectCnt = (TextView) findViewById(R.id.bottombar_collect_textview);
+				TextView collectCnt = (TextView) findViewById(R.id.bottombar_pageview_counter);
 				int cnt = Integer.valueOf((String) collectCnt.getText());
 				collectCnt.setText(String.valueOf(++cnt));
 
 				// 处理缓存
+				S.addStringSet(getApplicationContext(), "collected_list", itemURL);
 				S.addStringSet(getApplicationContext(), "collected_list", content_type);
 				S.addStringSet(getApplicationContext(), "collected_list", imgURL);
 				S.addStringSet(getApplicationContext(), "collected_list", title);
-				S.addStringSet(getApplicationContext(), "collected_list", author);
-				S.addStringSet(getApplicationContext(), "collected_list", updated_at);
 				S.addStringSet(getApplicationContext(), "collected_list", description);
+				S.addStringSet(getApplicationContext(), "collected_list", author);
+				S.addStringSet(getApplicationContext(), "collected_list", created_at);
+				S.addStringSet(getApplicationContext(), "collected_list", updated_at);
 				AsyncImageLoader loader = new AsyncImageLoader(getApplicationContext());
 
 				// 将图片缓存至外部文件中

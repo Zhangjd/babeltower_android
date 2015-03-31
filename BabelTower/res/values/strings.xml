@@ -2,6 +2,9 @@
 <resources>
 
     <string name="app_name">Babel Tower</string>
+    <string name="webview_bottombar_pageview">Pageview </string>
+    <string name="webview_bottombar_like">Like </string>
+    <string name="webview_bottombar_initial_count">0</string>
     <string name="header_name">Babel Tower</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_home">首页</string>
@@ -24,6 +27,7 @@
     <string name="menu_babieta_campusnews">分类浏览</string>
     <string name="menu_babieta_mycollection">我的收藏</string>
     <string name="menu_babieta_settings">设置</string>
+    <string name="feedback_submit">提交</string>
     <string name="feedback_babieta_content_hint">有什么想告诉我们的?</string>
     <string name="feedback_babieta_contact_hint">联系方式(可选)</string>
     <string name="open_source_licenses">*BabelTower for Android

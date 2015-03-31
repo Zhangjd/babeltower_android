@@ -4,6 +4,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <TextView
+        android:id="@+id/collect_fragment_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:background="#ffefefef"
+        android:padding="10dp"
+        android:text="@string/main_news_text"
+        android:textColor="#ff000000"
+        android:textSize="14sp" />
+
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/collect_list_view"

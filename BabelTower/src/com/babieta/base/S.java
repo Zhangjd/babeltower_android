@@ -1,7 +1,5 @@
 package com.babieta.base;
 
-import com.avos.avoscloud.LogUtil.log;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

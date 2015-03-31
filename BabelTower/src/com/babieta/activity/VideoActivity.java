@@ -2,12 +2,11 @@ package com.babieta.activity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.babieta.R;
 import com.babieta.base.Netroid;
 import com.duowan.mobile.netroid.Listener;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
-
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -17,7 +16,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -32,14 +30,14 @@ public class VideoActivity extends SwipeBackActivity {
 	private final String REQUESTS_TAG = "video_request";
 
 	private String itemURL = "";
-	private String imgURL = "";
-	private String title = "";
-	private String author = "";
-	private String updated_at = "";
+
+	// private String imgURL = "";
+	// private String title = "";
+	// private String author = "";
+	// private String updated_at = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_video);
 
@@ -47,10 +45,10 @@ public class VideoActivity extends SwipeBackActivity {
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
 		itemURL = bundle.getString("itemURL");
-		imgURL = bundle.getString("ImageURL");
-		author = bundle.getString("author");
-		updated_at = bundle.getString("updated_at");
-		title = bundle.getString("title");
+		// imgURL = bundle.getString("ImageURL");
+		// author = bundle.getString("author");
+		// updated_at = bundle.getString("updated_at");
+		// title = bundle.getString("title");
 
 		initViews();
 		initWebView();
@@ -70,10 +68,10 @@ public class VideoActivity extends SwipeBackActivity {
 						} else {
 							try {
 								String videoURL = response.getString("video_url");
-								
-								mWebView.loadUrl("http://player.youku.com/embed/XOTE0NzQ0OTg4");
+
+								// mWebView.loadUrl("http://player.youku.com/embed/XOTE0NzQ0OTg4");
+								mWebView.loadUrl(videoURL);
 							} catch (JSONException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -91,7 +89,6 @@ public class VideoActivity extends SwipeBackActivity {
 
 							@Override
 							public void onCancel(DialogInterface dialog) {
-								// TODO Auto-generated method stub
 								Netroid.getRequestQueue().cancelAll(REQUESTS_TAG);
 							}
 						});
@@ -115,12 +112,11 @@ public class VideoActivity extends SwipeBackActivity {
 		mWebView = (WebView) findViewById(R.id.video_webview_player);
 	}
 
+	@SuppressLint("SetJavaScriptEnabled")
 	private void initWebView() {
 		WebSettings settings = mWebView.getSettings();
 		settings.setJavaScriptEnabled(true);
 		settings.setJavaScriptCanOpenWindowsAutomatically(true);
-		settings.setPluginState(PluginState.ON);
-		// settings.setPluginsEnabled(true);
 		settings.setAllowFileAccess(true);
 		settings.setLoadWithOverviewMode(true);
 
@@ -130,21 +126,18 @@ public class VideoActivity extends SwipeBackActivity {
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		mWebView.onPause();
 	}
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		mWebView.onResume();
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
 			mWebView.loadData("", "text/html; charset=UTF-8", null);
 			finish();
@@ -155,10 +148,9 @@ public class VideoActivity extends SwipeBackActivity {
 	}
 
 	public static int getPhoneAndroidSDK() {
-		// TODO Auto-generated method stub
 		int version = 0;
 		try {
-			version = Integer.valueOf(android.os.Build.VERSION.SDK);
+			version = Integer.valueOf(android.os.Build.VERSION.SDK_INT);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
@@ -171,10 +163,8 @@ public class VideoActivity extends SwipeBackActivity {
 
 		@Override
 		public void onShowCustomView(View view, CustomViewCallback callback) {
-			// TODO Auto-generated method stub
 			onShowCustomView(view, mOriginalOrientation, callback);
 			super.onShowCustomView(view, callback);
-
 		}
 
 		public void onShowCustomView(View view, int requestedOrientation,
@@ -218,9 +208,8 @@ public class VideoActivity extends SwipeBackActivity {
 	class MyWebViewClient extends WebViewClient {
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			// TODO Auto-generated method stub
 			view.loadUrl(url);
-			return super.shouldOverrideUrlLoading(view, url);
+			return true; // 返回true表明点击网页里面的链接还是在当前的webview里跳转
 		}
 	}
 

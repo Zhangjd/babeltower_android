@@ -4,23 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.babieta.R;
-
 import android.content.Context;
-import android.media.audiofx.BassBoost.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 public class SettingAdapter extends BaseAdapter {
 
 	private List<Map<String, Object>> listItems;
 	private LayoutInflater layoutInflater;
-	private Context context;
 
 	public final class ListItemView { // custom widgets set
 		public TextView setting_name;
@@ -28,8 +23,6 @@ public class SettingAdapter extends BaseAdapter {
 	}
 
 	public SettingAdapter(Context context) {
-		// TODO Auto-generated constructor stub
-		this.context = context;
 		this.layoutInflater = LayoutInflater.from(context);
 		this.listItems = new ArrayList<Map<String, Object>>();
 
@@ -44,19 +37,16 @@ public class SettingAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return listItems.size();
 	}
 
 	@Override
 	public Object getItem(int arg0) {
-		// TODO Auto-generated method stub
 		return listItems.get(arg0);
 	}
 
 	@Override
 	public long getItemId(int arg0) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -64,11 +54,10 @@ public class SettingAdapter extends BaseAdapter {
 	// 然后根据这个长度，调用getView()逐一画出每一行。
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
 		ListItemView listItemView = null;
 
 		if (convertView == null) {
-			convertView = layoutInflater.inflate(R.layout.listview_setting, null);
+			convertView = layoutInflater.inflate(R.layout.listview_setting, parent, false);
 
 			listItemView = new ListItemView();
 			listItemView.setting_name = (TextView) convertView.findViewById(R.id.setting_name);

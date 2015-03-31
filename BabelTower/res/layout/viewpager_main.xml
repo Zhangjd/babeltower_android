@@ -17,7 +17,8 @@
         android:layout_alignBottom="@+id/vp_main"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="30dp"
-        android:gravity="right"
+        android:layout_marginEnd="30dp"
+        android:gravity="end"
         android:orientation="horizontal" />
 
     <TextView
@@ -26,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/vp_main"
         android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:padding="10dp"
         android:text="@string/main_news_text"
         android:textColor="#ff000000"

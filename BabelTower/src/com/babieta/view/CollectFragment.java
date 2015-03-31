@@ -7,7 +7,6 @@ import com.babieta.activity.AlbumWebViewActivity;
 import com.babieta.activity.WebViewActivity;
 import com.babieta.adapter.ListPostAdapter;
 import com.babieta.bean.PostBean;
-import com.babieta.layout.IndicatorLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 
@@ -26,11 +25,8 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class CollectFragment extends Fragment {
 	private View view;
-	private CarouselViewPage viewPager;
-	private IndicatorLayout indicatorLayout;
 	private PullToRefreshListView listView;
 	private ListPostAdapter listPostAdapter;
-	private View pageView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,12 +38,10 @@ public class CollectFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		initPostListView();
-		initPageView();
 	}
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 
 		TextView titleTextView = (TextView) getActivity().findViewById(R.id.header_textview);
@@ -56,10 +50,10 @@ public class CollectFragment extends Fragment {
 		listPostAdapter.clearPost();
 		LinkedList<PostBean> postBeans = PostBean.parseCollectContents(getActivity()); // 在这里解析
 		listPostAdapter.appendCollection(postBeans);
+		listPostAdapter.sortPost();
 		listPostAdapter.notifyDataSetChanged();
 
-		pageView = LayoutInflater.from(getActivity()).inflate(R.layout.viewpager_main, null);
-		TextView textView = (TextView) getActivity().findViewById(R.id.vp_main_text);
+		TextView textView = (TextView) getActivity().findViewById(R.id.collect_fragment_text);
 		if (listPostAdapter.getCount() > 0) {
 			textView.setText("收藏列表");
 		} else {
@@ -67,14 +61,6 @@ public class CollectFragment extends Fragment {
 			textView.setGravity(Gravity.CENTER);
 			textView.setTextColor(Color.rgb(96, 96, 96));
 		}
-	}
-
-	public void initPageView() {
-		pageView = LayoutInflater.from(getActivity()).inflate(R.layout.viewpager_main, null);
-		viewPager = (CarouselViewPage) pageView.findViewById(R.id.vp_main);
-		viewPager.setVisibility(View.GONE); // 隐藏CarouselViewPage
-
-		listView.getRefreshableView().addHeaderView(pageView, null, false);
 	}
 
 	public void initPostListView() {
@@ -88,24 +74,24 @@ public class CollectFragment extends Fragment {
 			@Override
 			// 点击item跳转到WebView中
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
-				// 取出item的URL , pos起始位置2??
+				// 取出item的URL , position起始位置1 (前面有个TextView)
 				LinkedList<PostBean> postBeans = listPostAdapter.postBeans;
-				String itemContentType = postBeans.get(pos - 2).getContentType();
+				String itemContentType = postBeans.get(pos - 1).getContentType();
 
 				if (itemContentType.equals("article")) {
 					Toast.makeText(getActivity(), "文章类型", Toast.LENGTH_SHORT).show();
 
 					Intent intent = new Intent(getActivity(), WebViewActivity.class);
 					Bundle bundle = new Bundle();
-					bundle.putCharSequence("content_type", postBeans.get(pos - 2)
-							.getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos - 2).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 2).getText());
-					bundle.putCharSequence("description", postBeans.get(pos - 2).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos - 2).getAuthor());
-					bundle.putCharSequence("updated_at", postBeans.get(pos - 2).getUpdatedAt());
+					bundle.putInt("id", postBeans.get(pos - 1).getId());
+					bundle.putCharSequence("content_type", postBeans.get(pos - 1).getContentType());
+					bundle.putCharSequence("itemURL", postBeans.get(pos - 1).getItemURL());
+					bundle.putCharSequence("title", postBeans.get(pos - 1).getTitle());
+					bundle.putCharSequence("description", postBeans.get(pos - 1).getDescription());
+					bundle.putCharSequence("ImageURL", postBeans.get(pos - 1).getHeaderImageUrl());
+					bundle.putCharSequence("author", postBeans.get(pos - 1).getAuthor());
+					bundle.putCharSequence("created_at", postBeans.get(pos - 1).getCreatedAt());
+					bundle.putCharSequence("updated_at", postBeans.get(pos - 1).getUpdatedAt());
 					intent.putExtras(bundle);
 					startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.base_slide_right_in,
@@ -115,13 +101,15 @@ public class CollectFragment extends Fragment {
 
 					Intent intent = new Intent(getActivity(), AlbumWebViewActivity.class);
 					Bundle bundle = new Bundle();
-					bundle.putCharSequence("content_type", postBeans.get(pos - 2).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos - 2).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 2).getText());
-					bundle.putCharSequence("description", postBeans.get(pos - 2).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos - 2).getAuthor());
-					bundle.putCharSequence("updated_at", postBeans.get(pos - 2).getUpdatedAt());
+					bundle.putInt("id", postBeans.get(pos - 1).getId());
+					bundle.putCharSequence("content_type", postBeans.get(pos - 1).getContentType());
+					bundle.putCharSequence("itemURL", postBeans.get(pos - 1).getItemURL());
+					bundle.putCharSequence("title", postBeans.get(pos - 1).getTitle());
+					bundle.putCharSequence("description", postBeans.get(pos - 1).getDescription());
+					bundle.putCharSequence("ImageURL", postBeans.get(pos - 1).getHeaderImageUrl());
+					bundle.putCharSequence("author", postBeans.get(pos - 1).getAuthor());
+					bundle.putCharSequence("created_at", postBeans.get(pos - 1).getCreatedAt());
+					bundle.putCharSequence("updated_at", postBeans.get(pos - 1).getUpdatedAt());
 					intent.putExtras(bundle);
 					startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.base_slide_right_in,

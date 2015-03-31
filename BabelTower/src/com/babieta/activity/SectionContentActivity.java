@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
 import com.babieta.adapter.ListPostAdapter;
 import com.babieta.base.Netroid;
@@ -33,24 +34,24 @@ public class SectionContentActivity extends SwipeBackActivity {
 	private final String REQUESTS_TAG = "section_request";
 
 	private String itemURL;
-	private String category;
+	// private String category;
 	private String module;
 
 	private ListView listView;
 	private ListPostAdapter listPostAdapter;
+	private LinkedList<PostBean> postBeans;
 
 	private ImageButton backButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_section_content);
 
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
 		itemURL = bundle.getString("itemURL");
-		category = bundle.getString("category");
+		// category = bundle.getString("category");
 		module = bundle.getString("module");
 
 		TextView title = (TextView) findViewById(R.id.header_textview);
@@ -64,7 +65,6 @@ public class SectionContentActivity extends SwipeBackActivity {
 
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				finish();
 				overridePendingTransition(0, R.anim.base_slide_right_out);
 
@@ -89,7 +89,6 @@ public class SectionContentActivity extends SwipeBackActivity {
 							} else {
 							}
 						} catch (JSONException e) {
-							System.out.println("error in parsing JSON : body_html");
 							e.printStackTrace();
 						}
 					}
@@ -97,6 +96,7 @@ public class SectionContentActivity extends SwipeBackActivity {
 					@Override
 					public void onError(NetroidError error) {
 						String data = error.getMessage();
+						log.d("onError", data);
 					}
 
 					@Override
@@ -111,9 +111,7 @@ public class SectionContentActivity extends SwipeBackActivity {
 
 							@Override
 							public void onCancel(DialogInterface dialog) {
-								// TODO Auto-generated method stub
 								Netroid.getRequestQueue().cancelAll(REQUESTS_TAG);
-
 							}
 						});
 						mProgressDialog.show();
@@ -140,18 +138,22 @@ public class SectionContentActivity extends SwipeBackActivity {
 			// 点击item跳转到WebView中
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 
-				LinkedList<PostBean> postBeans = listPostAdapter.postBeans;
+				postBeans = listPostAdapter.postBeans;
+				final int pos_final = pos;
 
 				if (postBeans.get(pos).getContentType().equals("article")) {
 					Toast.makeText(getApplicationContext(), "文章类型", Toast.LENGTH_SHORT).show();
 
 					Intent intent = new Intent(SectionContentActivity.this, WebViewActivity.class);
 					Bundle bundle = new Bundle();
+					bundle.putInt("id", postBeans.get(pos).getId());
+					bundle.putCharSequence("content_type", postBeans.get(pos).getContentType());
 					bundle.putCharSequence("itemURL", postBeans.get(pos).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos).getText());
+					bundle.putCharSequence("title", postBeans.get(pos).getTitle());
 					bundle.putCharSequence("description", postBeans.get(pos).getDescription());
 					bundle.putCharSequence("ImageURL", postBeans.get(pos).getImageUrl());
 					bundle.putCharSequence("author", postBeans.get(pos).getAuthor());
+					bundle.putCharSequence("created_at", postBeans.get(pos).getCreatedAt());
 					bundle.putCharSequence("updated_at", postBeans.get(pos).getUpdatedAt());
 					intent.putExtras(bundle);
 					startActivity(intent);
@@ -162,12 +164,14 @@ public class SectionContentActivity extends SwipeBackActivity {
 					Intent intent = new Intent(SectionContentActivity.this,
 							AlbumWebViewActivity.class);
 					Bundle bundle = new Bundle();
+					bundle.putInt("id", postBeans.get(pos).getId());
 					bundle.putCharSequence("content_type", postBeans.get(pos).getContentType());
 					bundle.putCharSequence("itemURL", postBeans.get(pos).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos).getText());
+					bundle.putCharSequence("title", postBeans.get(pos).getTitle());
 					bundle.putCharSequence("description", postBeans.get(pos).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos).getHeaderImageUrl());
+					bundle.putCharSequence("ImageURL", postBeans.get(pos).getImageUrl());
 					bundle.putCharSequence("author", postBeans.get(pos).getAuthor());
+					bundle.putCharSequence("created_at", postBeans.get(pos).getCreatedAt());
 					bundle.putCharSequence("updated_at", postBeans.get(pos).getUpdatedAt());
 					intent.putExtras(bundle);
 					startActivity(intent);
@@ -183,9 +187,27 @@ public class SectionContentActivity extends SwipeBackActivity {
 							new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface arg0, int arg1) {
-									// TODO Auto-generated method stub
 									Intent intent = new Intent(SectionContentActivity.this,
 											VideoActivity.class);
+									Bundle bundle = new Bundle();
+									bundle.putInt("id", postBeans.get(pos_final).getId());
+									bundle.putCharSequence("content_type", postBeans.get(pos_final)
+											.getContentType());
+									bundle.putCharSequence("itemURL", postBeans.get(pos_final)
+											.getItemURL());
+									bundle.putCharSequence("title", postBeans.get(pos_final)
+											.getTitle());
+									bundle.putCharSequence("description", postBeans.get(pos_final)
+											.getDescription());
+									bundle.putCharSequence("ImageURL", postBeans.get(pos_final)
+											.getImageUrl());
+									bundle.putCharSequence("author", postBeans.get(pos_final)
+											.getAuthor());
+									bundle.putCharSequence("created_at", postBeans.get(pos_final)
+											.getCreatedAt());
+									bundle.putCharSequence("updated_at", postBeans.get(pos_final)
+											.getUpdatedAt());
+									intent.putExtras(bundle);
 									startActivity(intent);
 									overridePendingTransition(R.anim.base_slide_right_in,
 											R.anim.base_slide_remain);
@@ -195,7 +217,6 @@ public class SectionContentActivity extends SwipeBackActivity {
 							new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface arg0, int arg1) {
-									// TODO Auto-generated method stub
 								}
 							});
 					alertDialog.show();
@@ -204,11 +225,15 @@ public class SectionContentActivity extends SwipeBackActivity {
 
 					Intent intent = new Intent(SectionContentActivity.this, SpecialActivity.class);
 					Bundle bundle = new Bundle();
-					bundle.putCharSequence("id", String.valueOf(postBeans.get(pos).getId()));
-					bundle.putCharSequence("title", postBeans.get(pos).getText());
+					bundle.putInt("id", postBeans.get(pos).getId());
+					bundle.putCharSequence("content_type", postBeans.get(pos).getContentType());
+					bundle.putCharSequence("itemURL", postBeans.get(pos).getItemURL());
+					bundle.putCharSequence("title", postBeans.get(pos).getTitle());
 					bundle.putCharSequence("description", postBeans.get(pos).getDescription());
-					bundle.putCharSequence("headerImageURL", postBeans.get(pos).getHeaderImageUrl());
 					bundle.putCharSequence("ImageURL", postBeans.get(pos).getImageUrl());
+					bundle.putCharSequence("author", postBeans.get(pos).getAuthor());
+					bundle.putCharSequence("created_at", postBeans.get(pos).getCreatedAt());
+					bundle.putCharSequence("updated_at", postBeans.get(pos).getUpdatedAt());
 					intent.putExtras(bundle);
 					startActivity(intent);
 					overridePendingTransition(R.anim.base_slide_right_in, R.anim.base_slide_remain);

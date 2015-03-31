@@ -10,7 +10,6 @@ public class SelfImageLoader extends ImageLoader {
 
 	public SelfImageLoader(RequestQueue queue, ImageCache imageCache) {
 		super(queue, imageCache);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

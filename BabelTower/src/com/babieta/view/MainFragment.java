@@ -1,5 +1,6 @@
 package com.babieta.view;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,7 +23,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 
-import android.R.integer;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
@@ -35,7 +36,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -49,7 +49,6 @@ import android.widget.Toast;
 
 public class MainFragment extends Fragment {
 	private View view;
-
 	private View pageView;
 	private CarouselViewPage viewPager;
 	private IndicatorLayout indicatorLayout;
@@ -59,8 +58,9 @@ public class MainFragment extends Fragment {
 	private ListPostAdapter listPostAdapter;
 	private LinkedList<PostBean> postBeans;
 
-	public int currentViewPagerItem; // 当前页面
+	private int currentViewPagerItem; // 当前页面
 	private ScheduledExecutorService scheduledExecutorService;
+	private MyHandler mHandler = new MyHandler(this);
 
 	private String targetURL;
 
@@ -74,12 +74,12 @@ public class MainFragment extends Fragment {
 	// Fragment在不可见的时候会回收所有View，所以在出栈的时候上一个Fragment需要重新初始化View
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.listview_main, container, false);
+		this.view = inflater.inflate(R.layout.listview_main, container, false);
 		TextView titleTextView = (TextView) getActivity().findViewById(R.id.header_textview);
 		titleTextView.setText(R.string.header_name);
 
-		initPostListView(); // timeline部分
-		initPageView(); // focus部分
+		this.initPostListView(); // timeline部分
+		this.initPageView(); // focus部分
 
 		listPostAdapter.notifyDataSetChanged();
 
@@ -115,6 +115,7 @@ public class MainFragment extends Fragment {
 		listPostAdapter = new ListPostAdapter(getActivity());
 	}
 
+	@SuppressLint("InflateParams")
 	private void initPageView() {
 		pageView = LayoutInflater.from(getActivity()).inflate(R.layout.viewpager_main, null);
 		viewPager = (CarouselViewPage) pageView.findViewById(R.id.vp_main);
@@ -129,21 +130,27 @@ public class MainFragment extends Fragment {
 
 		@Override
 		public void run() {
-			currentViewPagerItem = (currentViewPagerItem + 1) % (pageCarouselAdapter.getCount());
+			currentViewPagerItem = (viewPager.getCurrentItem() + 1)
+					% (pageCarouselAdapter.getCount());
 			// 更新界面
-			// handler.sendEmptyMessage(0);
-			handler.obtainMessage().sendToTarget();
+			mHandler.obtainMessage().sendToTarget();
 		}
 	}
 
-	private Handler handler = new Handler() {
+	public static class MyHandler extends Handler {
+		WeakReference<MainFragment> mFragment;
+
+		public MyHandler(MainFragment fragment) {
+			mFragment = new WeakReference<MainFragment>(fragment);
+		}
 
 		@Override
 		public void handleMessage(Message msg) {
 			// 设置当前页面
-			viewPager.setCurrentItem(currentViewPagerItem);
+			MainFragment theFragment = mFragment.get();
+			theFragment.viewPager.setCurrentItem(theFragment.currentViewPagerItem);
 		}
-	};
+	}
 
 	private void initPostListView() {
 		listView = (PullToRefreshListView) view.findViewById(R.id.listview_main);
@@ -166,12 +173,14 @@ public class MainFragment extends Fragment {
 
 					Intent intent = new Intent(getActivity(), WebViewActivity.class);
 					Bundle bundle = new Bundle();
+					bundle.putInt("id", postBeans.get(pos - 2).getId());
 					bundle.putCharSequence("content_type", postBeans.get(pos - 2).getContentType());
 					bundle.putCharSequence("itemURL", postBeans.get(pos - 2).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 2).getText());
+					bundle.putCharSequence("title", postBeans.get(pos - 2).getTitle());
 					bundle.putCharSequence("description", postBeans.get(pos - 2).getDescription());
 					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getImageUrl());
 					bundle.putCharSequence("author", postBeans.get(pos - 2).getAuthor());
+					bundle.putCharSequence("created_at", postBeans.get(pos - 2).getCreatedAt());
 					bundle.putCharSequence("updated_at", postBeans.get(pos - 2).getUpdatedAt());
 					intent.putExtras(bundle);
 					startActivity(intent);
@@ -182,12 +191,14 @@ public class MainFragment extends Fragment {
 
 					Intent intent = new Intent(getActivity(), AlbumWebViewActivity.class);
 					Bundle bundle = new Bundle();
+					bundle.putInt("id", postBeans.get(pos - 2).getId());
 					bundle.putCharSequence("content_type", postBeans.get(pos - 2).getContentType());
 					bundle.putCharSequence("itemURL", postBeans.get(pos - 2).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 2).getText());
+					bundle.putCharSequence("title", postBeans.get(pos - 2).getTitle());
 					bundle.putCharSequence("description", postBeans.get(pos - 2).getDescription());
 					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getHeaderImageUrl());
 					bundle.putCharSequence("author", postBeans.get(pos - 2).getAuthor());
+					bundle.putCharSequence("created_at", postBeans.get(pos - 2).getCreatedAt());
 					bundle.putCharSequence("updated_at", postBeans.get(pos - 2).getUpdatedAt());
 					intent.putExtras(bundle);
 					startActivity(intent);
@@ -205,14 +216,21 @@ public class MainFragment extends Fragment {
 								public void onClick(DialogInterface arg0, int arg1) {
 									Intent intent = new Intent(getActivity(), VideoActivity.class);
 									Bundle bundle = new Bundle();
+									bundle.putInt("id", postBeans.get(pos_final - 2).getId());
+									bundle.putCharSequence("content_type",
+											postBeans.get(pos_final - 2).getContentType());
 									bundle.putCharSequence("itemURL", postBeans.get(pos_final - 2)
 											.getItemURL());
 									bundle.putCharSequence("title", postBeans.get(pos_final - 2)
-											.getText());
+											.getTitle());
+									bundle.putCharSequence("description",
+											postBeans.get(pos_final - 2).getDescription());
 									bundle.putCharSequence("ImageURL", postBeans.get(pos_final - 2)
 											.getImageUrl());
 									bundle.putCharSequence("author", postBeans.get(pos_final - 2)
 											.getAuthor());
+									bundle.putCharSequence("created_at",
+											postBeans.get(pos_final - 2).getCreatedAt());
 									bundle.putCharSequence("updated_at",
 											postBeans.get(pos_final - 2).getUpdatedAt());
 									intent.putExtras(bundle);
@@ -235,12 +253,15 @@ public class MainFragment extends Fragment {
 
 					Intent intent = new Intent(getActivity(), SpecialActivity.class);
 					Bundle bundle = new Bundle();
-					bundle.putCharSequence("id", String.valueOf(postBeans.get(pos - 2).getId()));
-					bundle.putCharSequence("title", postBeans.get(pos - 2).getText());
+					bundle.putInt("id", postBeans.get(pos - 2).getId());
+					bundle.putCharSequence("content_type", postBeans.get(pos - 2).getContentType());
+					bundle.putCharSequence("itemURL", postBeans.get(pos - 2).getItemURL());
+					bundle.putCharSequence("title", postBeans.get(pos - 2).getTitle());
 					bundle.putCharSequence("description", postBeans.get(pos - 2).getDescription());
-					bundle.putCharSequence("headerImageURL", postBeans.get(pos - 2)
-							.getHeaderImageUrl());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getImageUrl());
+					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getHeaderImageUrl());
+					bundle.putCharSequence("author", postBeans.get(pos - 2).getAuthor());
+					bundle.putCharSequence("created_at", postBeans.get(pos - 2).getCreatedAt());
+					bundle.putCharSequence("updated_at", postBeans.get(pos - 2).getUpdatedAt());
 					intent.putExtras(bundle);
 					startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.base_slide_right_in,
@@ -365,7 +386,7 @@ public class MainFragment extends Fragment {
 
 			S.addStringSet(getActivity(), "timeline_list", String.valueOf(bean.getId())); // 1id
 			S.addStringSet(getActivity(), "timeline_list", bean.getItemURL()); // 2链接
-			S.addStringSet(getActivity(), "timeline_list", bean.getText()); // 3标题
+			S.addStringSet(getActivity(), "timeline_list", bean.getTitle()); // 3标题
 			S.addStringSet(getActivity(), "timeline_list", bean.getAuthor()); // 4作者
 			S.addStringSet(getActivity(), "timeline_list", bean.getUpdatedAt()); // 5时间
 			S.addStringSet(getActivity(), "timeline_list", bean.getImageUrl()); // 6图片地址
@@ -389,9 +410,10 @@ public class MainFragment extends Fragment {
 
 			postBean.setId(Integer.valueOf(collectlist[i]));
 			postBean.setItemURL(collectlist[i + 1]);
-			postBean.setText(collectlist[i + 2]);
+			postBean.setTitle(collectlist[i + 2]);
 			postBean.setAuthor(collectlist[i + 3]);
 			postBean.setUpdatedAt(collectlist[i + 4]);
+			postBean.setCreatedAt(collectlist[i + 4]); // (注意这个时间同updated_at)
 			postBean.setImageUrl(collectlist[i + 5]);
 			postBean.setHeaderImageUrl(collectlist[i + 6]);
 			postBean.setDescription(collectlist[i + 7]);

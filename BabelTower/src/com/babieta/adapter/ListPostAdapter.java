@@ -7,20 +7,15 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Locale;
-
-import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
 import com.babieta.base.AsyncImageLoader;
 import com.babieta.base.Util;
 import com.babieta.bean.PostBean;
-
-import android.R.integer;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -59,15 +54,15 @@ public class ListPostAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View view, ViewGroup arg2) {
+	public View getView(int position, View view, ViewGroup parent) {
 		PostBean postBean = postBeans.get(position);
-		// TODO view == null
 		String imageURL;
 		if (postBean.getContentType().equals("album")) {
-			view = LayoutInflater.from(context).inflate(R.layout.listview_main_item_album, null);
+			view = LayoutInflater.from(context).inflate(R.layout.listview_main_item_album, parent,
+					false);
 			imageURL = postBean.getHeaderImageUrl();
 		} else {
-			view = LayoutInflater.from(context).inflate(R.layout.listview_main_item, null);
+			view = LayoutInflater.from(context).inflate(R.layout.listview_main_item, parent, false);
 			imageURL = postBean.getImageUrl();
 		}
 		final String final_imageURL = imageURL;
@@ -77,7 +72,7 @@ public class ListPostAdapter extends BaseAdapter {
 		timeTextView = (TextView) view.findViewById(R.id.post_list_updated_at);
 		imageView = (ImageView) view.findViewById(R.id.post_list_image);
 
-		titleTextView.setText(postBean.getText()); // TextView换行?Util.getText
+		titleTextView.setText(postBean.getTitle()); // TextView换行?Util.getText
 		publisherTextView.setText(Util.getText(postBean.getAuthor()));
 
 		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"; // 设置时间TextView

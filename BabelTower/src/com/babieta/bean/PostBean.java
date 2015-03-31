@@ -48,11 +48,11 @@ public class PostBean {
 		this.id = id;
 	}
 
-	public String getText() { // 标题
+	public String getTitle() { // 标题
 		return text;
 	}
 
-	public void setText(String text) {
+	public void setTitle(String text) {
 		this.text = text;
 	}
 
@@ -145,7 +145,7 @@ public class PostBean {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				PostBean postBean = new PostBean();
 				JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-				postBean.setText((String) jsonObject.get("title"));
+				postBean.setTitle((String) jsonObject.get("title"));
 				postBean.setImageUrl(jsonObject.getString("image"));
 				postBeans.add(postBean);
 			}
@@ -175,7 +175,7 @@ public class PostBean {
 
 				// 把每条新闻的数据添加到一个PostBean对象中
 				postBean.setId(((Integer) mJsonObject.get("id")).intValue());
-				postBean.setText(mJsonObject.getString("title"));
+				postBean.setTitle(mJsonObject.getString("title"));
 				postBean.setItemURL(ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_ARTICLE
 						+ mJsonObject.getString("id"));
 				postBean.setImageUrl(mJsonObject.getString("thumb_image_url"));
@@ -216,7 +216,7 @@ public class PostBean {
 				if (on_focus == "false")
 					continue;
 
-				postBean.setText((String) mJsonObject.get("title"));
+				postBean.setTitle((String) mJsonObject.get("title"));
 				postBean.setItemURL(ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_ARTICLE
 						+ mJsonObject.getString("id"));
 				postBean.setImageUrl(ApiUrl.BABIETA_BASE_URL
@@ -231,7 +231,6 @@ public class PostBean {
 
 	// parse收藏的内容
 	public static LinkedList<PostBean> parseCollectContents(Activity activity) {
-		// TODO Auto-generated method stub
 		LinkedList<PostBean> postBeans = new LinkedList<PostBean>();
 		String[] collectlist = S.getStringSet(activity, "collected_list");
 
@@ -242,17 +241,19 @@ public class PostBean {
 		for (int i = 1; i < (collectlist.length);) {
 			PostBean postBean = new PostBean();
 
-			postBean.setItemURL(collectlist[i]);
-			postBean.setContentType(collectlist[i + 1]);
-			postBean.setImageUrl(collectlist[i + 2]);
-			postBean.setHeaderImageUrl(collectlist[i + 2]);
-			postBean.setText(collectlist[i + 3]);
-			postBean.setAuthor(collectlist[i + 4]);
-			postBean.setUpdatedAt(collectlist[i + 5]);
-			postBean.setDescription(collectlist[i + 6]);
+			postBean.setId(Integer.valueOf(collectlist[i]));
+			postBean.setItemURL(collectlist[i + 1]);
+			postBean.setContentType(collectlist[i + 2]);
+			postBean.setImageUrl(collectlist[i + 3]);
+			postBean.setHeaderImageUrl(collectlist[i + 3]); //the same
+			postBean.setTitle(collectlist[i + 4]);
+			postBean.setDescription(collectlist[i + 5]);
+			postBean.setAuthor(collectlist[i + 6]);
+			postBean.setCreatedAt(collectlist[i + 7]);
+			postBean.setUpdatedAt(collectlist[i + 8]);
 
 			postBeans.add(postBean); // 添加到链表
-			i = i + 7;
+			i = i + 9;
 		}
 		return postBeans;
 	}
@@ -266,16 +267,13 @@ public class PostBean {
 		try {
 			JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
 			jsonArray = jsonObject.getJSONArray("list"); // 新闻列表
-			String head_id = S.getString(c, "news_head_id"); // 存储在SharedPreference中的TimeLine
-																// max_id
-
 			for (int i = 0; i < jsonArray.length(); i++) {
 				PostBean postBean = new PostBean();
 				JSONObject mJsonObject = jsonArray.getJSONObject(i);
 
 				// 把每条新闻的数据添加到一个PostBean对象中
 				postBean.setId(((Integer) mJsonObject.get("id")).intValue());
-				postBean.setText(mJsonObject.getString("title"));
+				postBean.setTitle(mJsonObject.getString("title"));
 				postBean.setItemURL(ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_ARTICLE
 						+ mJsonObject.getString("id"));
 				postBean.setImageUrl(mJsonObject.getString("thumb_image_url"));

@@ -29,7 +29,6 @@ public class FeedbackActivity extends SwipeBackActivity {
 	private Button feedback_submit;
 	private TextView feedback_content;
 	private TextView feedback_contact;
-
 	private TextView feedback_log;
 
 	public static FeedbackThread feedbackThread;
@@ -40,13 +39,11 @@ public class FeedbackActivity extends SwipeBackActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_feedback);
 
 		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
 		titleTextView.setText("Òâ¼û·´À¡");
-		TextView feedback_textview = (TextView) findViewById(R.id.feedback_textview);
 
 		this.initFeedback();
 		this.initEventsRegister();
@@ -59,7 +56,6 @@ public class FeedbackActivity extends SwipeBackActivity {
 		feedback_submit = (Button) findViewById(R.id.feedback_submit);
 		feedback_contact = (TextView) findViewById(R.id.feedback_contact);
 		feedback_content = (TextView) findViewById(R.id.feedback_content);
-
 		feedback_log = (TextView) findViewById(R.id.feedback_textview);
 
 		feedback_contact.setText(S.getString(getApplicationContext(), "feedback_contact"));
@@ -68,10 +64,8 @@ public class FeedbackActivity extends SwipeBackActivity {
 
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				finish();
 				overridePendingTransition(0, R.anim.base_slide_right_out);
-
 			}
 		});
 
@@ -79,7 +73,6 @@ public class FeedbackActivity extends SwipeBackActivity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				log.d("FeedbackActivity", "submit onclick");
 
 				String comment = feedback_content.getText().toString();

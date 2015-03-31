@@ -12,8 +12,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 public class ApiData {
-	private static String ret = "";
-
 	public static String httpGet(String url) {
 		System.out.println(url);
 		HttpClient client = new DefaultHttpClient();
@@ -37,8 +35,7 @@ public class ApiData {
 			e.printStackTrace();
 			return "";
 		}
-		System.out.println(sBuffer.toString());
+		// System.out.println(sBuffer.toString());
 		return sBuffer.toString();
 	}
-
 }

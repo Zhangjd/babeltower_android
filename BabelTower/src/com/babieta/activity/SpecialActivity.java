@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
 import com.babieta.base.ApiUrl;
 import com.babieta.base.Netroid;
@@ -25,7 +26,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -48,7 +48,7 @@ public class SpecialActivity extends SwipeBackActivity {
 	private ProgressDialog mProgressDialog;
 
 	private String id = "";
-	private String itemURL = "";
+	// private String itemURL = "";
 	private String headerImageURL = "";
 	private String title = "";
 	private String description = "";
@@ -57,11 +57,9 @@ public class SpecialActivity extends SwipeBackActivity {
 	private List<Map<String, String>> data = new ArrayList<Map<String, String>>();
 
 	private final String REQUESTS_TAG = "special_request";
-	private String result = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_special);
 
@@ -74,7 +72,7 @@ public class SpecialActivity extends SwipeBackActivity {
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
 		id = bundle.getString("id");
-		itemURL = bundle.getString("itemURL");
+		// itemURL = bundle.getString("itemURL");
 		title = bundle.getString("title");
 		description = bundle.getString("description");
 		headerImageURL = bundle.getString("headerImageURL");
@@ -91,7 +89,6 @@ public class SpecialActivity extends SwipeBackActivity {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				// TODO Auto-generated method stub
 				String idStr = data.get(arg2).get("id");
 				System.out.println(id);
 
@@ -128,7 +125,6 @@ public class SpecialActivity extends SwipeBackActivity {
 
 							@Override
 							public void onCancel(DialogInterface dialog) {
-								// TODO Auto-generated method stub
 								Netroid.getRequestQueue().cancelAll(REQUESTS_TAG);
 
 							}
@@ -169,8 +165,7 @@ public class SpecialActivity extends SwipeBackActivity {
 							} else {
 							}
 						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							Log.w("JSONException", "解析子内容出错了!");
+							log.e("JSONException", "解析子内容出错了!");
 							e.printStackTrace();
 						}
 					}
@@ -178,7 +173,7 @@ public class SpecialActivity extends SwipeBackActivity {
 					@Override
 					public void onError(NetroidError error) {
 						String data = error.getMessage();
-						result = "";
+						log.e("onError.getMessage", data);
 					}
 				});
 		// 设置请求标识，这个标识可用于终止该请求时传入的Key
@@ -193,7 +188,7 @@ public class SpecialActivity extends SwipeBackActivity {
 		}
 	}
 
-	// 子标题listview
+	// 子标题ListView
 	private void changeListView() {
 
 		listView.setAdapter(new mySimpleAdater(this, data, android.R.layout.simple_list_item_1,
@@ -208,7 +203,6 @@ public class SpecialActivity extends SwipeBackActivity {
 
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				finish();
 				overridePendingTransition(0, R.anim.base_slide_right_out);
 			}
@@ -238,20 +232,18 @@ public class SpecialActivity extends SwipeBackActivity {
 		listView.setLayoutParams(params);
 	}
 
-	//重写mySimpleAdater的getView
+	// 重写mySimpleAdater的getView
 	private class mySimpleAdater extends SimpleAdapter {
 
 		public mySimpleAdater(Context context, List<? extends Map<String, ?>> data, int resource,
 				String[] from, int[] to) {
 			super(context, data, resource, from, to);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
 			View v = super.getView(position, convertView, parent);
-			TextView textView = (TextView)v.findViewById(android.R.id.text1);
+			TextView textView = (TextView) v.findViewById(android.R.id.text1);
 			textView.setTextColor(Color.rgb(48, 48, 48));
 			return v;
 		}
