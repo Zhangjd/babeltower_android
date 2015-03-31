@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/webview_bottombar"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="#44BC49"
+    android:orientation="horizontal"
+    android:paddingBottom="12dp"
+    android:paddingTop="12dp" >
+
+    <Button
+        android:id="@+id/bottombar_like"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/message_vote_read" />
+
+    <TextView
+        android:id="@+id/bottombar_like_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/bottombar_like"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="0"
+        android:textColor="#ffffffff"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/bottombar_collect"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@+id/bottombar_like_textview"
+        android:background="@drawable/news_collect" />
+
+    <TextView
+        android:id="@+id/bottombar_collect_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/bottombar_collect"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="0"
+        android:textColor="#ffffffff"
+        android:textSize="16sp" />
+
+    <!-- <TextView
+        android:id="@+id/bottombar_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:paddingRight="20dp"
+        android:text="更多文章"
+        android:textColor="#ffffffff"
+        android:textSize="16sp" /> -->
+
+</RelativeLayout>
