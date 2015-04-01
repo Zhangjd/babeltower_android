@@ -5,7 +5,6 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.babieta.R;
-import com.babieta.base.AsyncImageLoader;
 import com.babieta.base.Netroid;
 import com.babieta.base.S;
 import com.duowan.mobile.netroid.AuthFailureError;
@@ -18,7 +17,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -186,11 +184,20 @@ public class WebViewActivity extends SwipeBackActivity {
 
 		// find collections
 		String[] strings = S.getStringSet(getApplicationContext(), "collected_list");
-
 		for (int i = 0; i < strings.length; i++) {
 			if (itemURL.equals(strings[i])) {
 				collectFlag = 1;
 				collectButton.setBackgroundResource(R.drawable.news_collected);
+				break;
+			}
+		}
+
+		// find liked
+		String[] likeSet = S.getStringSet(getApplicationContext(), "liked_list");
+		for (int i = 1; i < likeSet.length; i++) {
+			if (itemURL.equals(likeSet[i])) {
+				likeFlag = true;
+				likeButton.setBackgroundResource(R.drawable.message_vote);
 				break;
 			}
 		}
@@ -203,23 +210,7 @@ public class WebViewActivity extends SwipeBackActivity {
 			}
 		});
 
-		likeTextView.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				handleLike();
-			}
-		});
-
 		collectButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				handleCollect();
-			}
-		});
-
-		colletTextView.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
@@ -258,8 +249,8 @@ public class WebViewActivity extends SwipeBackActivity {
 		int cnt = Integer.valueOf(likeTextView.getText().toString());
 		likeTextView.setText(String.valueOf(++cnt));
 		likeButton.setBackgroundResource(R.drawable.message_vote);
-
-		Toast.makeText(WebViewActivity.this, "Nice!", Toast.LENGTH_SHORT).show();
+		S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
+		Toast.makeText(WebViewActivity.this, "Nice!", Toast.LENGTH_SHORT).show(); // Toast
 	}
 
 	public class PutRequest extends StringRequest {
@@ -324,24 +315,6 @@ public class WebViewActivity extends SwipeBackActivity {
 				S.addStringSet(getApplicationContext(), "collected_list", author);
 				S.addStringSet(getApplicationContext(), "collected_list", created_at);
 				S.addStringSet(getApplicationContext(), "collected_list", updated_at);
-				AsyncImageLoader loader = new AsyncImageLoader(getApplicationContext());
-
-				// 将图片缓存至外部文件中
-				loader.setCache2File(true); // false
-				// 设置外部缓存文件夹
-				loader.setCachedDir(getApplicationContext().getCacheDir().getAbsolutePath());
-
-				// 下载图片，第二个参数是否缓存至内存中
-				loader.downloadImage(imgURL, true/* false */, new AsyncImageLoader.ImageCallback() {
-					@Override
-					public void onImageLoaded(Bitmap bitmap, String imageUrl) {
-						if (bitmap != null) {
-
-						} else {
-							// 下载失败
-						}
-					}
-				});
 
 				Toast.makeText(WebViewActivity.this, "已收藏", Toast.LENGTH_SHORT).show();
 			} else {

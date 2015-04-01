@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Babel Tower</string>
+    <string name="babeltower_version_name">v0.1.1</string>
     <string name="webview_bottombar_pageview">Pageview </string>
     <string name="webview_bottombar_like">Like </string>
     <string name="webview_bottombar_initial_count">0</string>
@@ -18,8 +19,6 @@
     <string name="title_activity_about">AboutActivity</string>
     <string name="title_activity_feedback">FeedbackActivity</string>
     <string name="title_activity_special">SpecialActivity</string>
-    <string name="about_babieta_appname">BabelTower beta</string>
-    <string name="about_babieta_version">v0.0.1</string>
     <string name="about_babieta_license">Open Source Licenses</string>
     <string name="about_babieta_copyright">©2015 100steps Innovation Center</string>
     <string name="about_babieta_rights_reserved">All rights reserved.</string>
@@ -31,8 +30,8 @@
     <string name="feedback_babieta_content_hint">有什么想告诉我们的?</string>
     <string name="feedback_babieta_contact_hint">联系方式(可选)</string>
     <string name="open_source_licenses">*BabelTower for Android
-\nCopyright 2015 Zhangjd, Zhangzk
-\n
+\nCopyright 2015 BBTtech
+\n(Zhangjd, Zhangzk, Xianqm)
 \n
 \n---------------------------------------
 \n Referenced Libraries

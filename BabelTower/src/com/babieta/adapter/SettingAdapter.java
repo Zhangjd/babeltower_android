@@ -55,23 +55,15 @@ public class SettingAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ListItemView listItemView = null;
-
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(R.layout.listview_setting, parent, false);
-
 			listItemView = new ListItemView();
 			listItemView.setting_name = (TextView) convertView.findViewById(R.id.setting_name);
-			// listItemView.setting_info = (TextView)
-			// convertView.findViewById(R.id.setting_info);
-
 			convertView.setTag(listItemView);
 		} else {
 			listItemView = (ListItemView) convertView.getTag();
 		}
-
 		listItemView.setting_name.setText((String) listItems.get(position).get("setting_name"));
-		// listItemView.setting_info.setText("test");
-
 		return convertView;
 	}
 

@@ -47,13 +47,12 @@ public class CarouselViewPage extends ViewPager {
 			if (distance < 15) { // 距离较小，当作click事件来处理
 				Toast.makeText(getContext(), "click on: " + this.getCurrentItem(),
 						Toast.LENGTH_SHORT).show();
-				// TODO
 				return performClick();
 			} else { // 滑动
 				if (x1 < 50) { // 滑出菜单
 					MainActivity.toggleMenu();
-				} else if (distanceY > 100) { // 下拉刷新
-					MainActivity.mainFragment.listView.setRefreshing();
+				} else if (distanceY > 200) { // 下拉刷新
+					MainActivity.mainFragment.manualRefresh();
 				} else {
 
 				}

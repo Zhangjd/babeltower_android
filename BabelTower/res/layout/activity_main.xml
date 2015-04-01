@@ -5,11 +5,13 @@
     android:background="#ffffffff"
     android:orientation="vertical" >
 
-	<include layout="@layout/head" />
-    <LinearLayout   
-        android:id="@+id/content_fragment"  
-        android:layout_width="wrap_content"  
-        android:layout_height="fill_parent"   
-        android:orientation="vertical" >   
-    </LinearLayout>   
+    <include layout="@layout/head" />
+
+    <LinearLayout
+        android:id="@+id/content_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+    </LinearLayout>
+
 </LinearLayout>

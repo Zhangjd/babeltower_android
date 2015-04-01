@@ -54,7 +54,7 @@ public class Util {
 				// max width, max height，即保存的每个缓存文件的最大长宽
 				// .diskCacheExtraOptions(480, 800, null)
 				// Can slow ImageLoader, use it carefully (Better don't use it)
-				.threadPoolSize(3)
+				.threadPoolSize(5)
 				// 线程池内加载的数量
 				.threadPriority(Thread.NORM_PRIORITY - 2)
 				.denyCacheImageMultipleSizesInMemory()

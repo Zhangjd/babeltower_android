@@ -7,13 +7,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/list_view"
-        android:minHeight="72.0dip" >
+        android:minHeight="72.0dip"
+        android:paddingBottom="15.0dip" >
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="1px"
-            android:layout_marginLeft="12.0dip"
-            android:layout_marginRight="12.0dip"
             android:background="#A0A0A0" />
 
         <ImageView
@@ -58,11 +57,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/post_list_text"
-            android:layout_marginBottom="18dp"
             android:layout_marginLeft="12dp"
             android:layout_marginStart="12dp"
-            android:layout_toRightOf="@+id/post_list_publisher"
             android:layout_toEndOf="@+id/post_list_publisher"
+            android:layout_toRightOf="@+id/post_list_publisher"
             android:maxLines="1"
             android:textColor="#FF646464" />
     </RelativeLayout>

@@ -53,12 +53,6 @@ public class SettingFragment extends Fragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// HashMap<String, Object> map = (HashMap<String, Object>)
-				// listView
-				// .getItemAtPosition(position);
-				// Toast.makeText(getActivity(),
-				// (String)map.get("setting_name"), Toast.LENGTH_SHORT).show();
-
 				switch (position) {
 				case 0: // clear cache
 					ContextThemeWrapper themedContext;
@@ -184,9 +178,6 @@ public class SettingFragment extends Fragment {
 				case 2: // feedback
 					Intent feedbackIntent = new Intent(getActivity(), FeedbackActivity.class);
 					startActivity(feedbackIntent);
-
-					// FeedbackAgent agent = new FeedbackAgent(getActivity());
-					// agent.startDefaultThreadActivity();
 					getActivity().overridePendingTransition(R.anim.base_slide_right_in,
 							R.anim.base_slide_remain);
 					break;
@@ -207,9 +198,7 @@ public class SettingFragment extends Fragment {
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
-
 		TextView titleTextView = (TextView) getActivity().findViewById(R.id.header_textview);
 		titleTextView.setText("…Ë÷√");
 	}

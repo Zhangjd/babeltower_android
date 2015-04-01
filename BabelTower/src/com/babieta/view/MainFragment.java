@@ -54,7 +54,7 @@ public class MainFragment extends Fragment {
 	private IndicatorLayout indicatorLayout;
 	private PageCarouselAdapter pageCarouselAdapter;
 
-	public PullToRefreshListView listView;
+	private PullToRefreshListView listView;
 	private ListPostAdapter listPostAdapter;
 	private LinkedList<PostBean> postBeans;
 
@@ -75,21 +75,16 @@ public class MainFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.view = inflater.inflate(R.layout.listview_main, container, false);
-		TextView titleTextView = (TextView) getActivity().findViewById(R.id.header_textview);
-		titleTextView.setText(R.string.header_name);
-
 		this.initPostListView(); // timeline部分
 		this.initPageView(); // focus部分
 
-		listPostAdapter.notifyDataSetChanged();
-
-		// TextView textView = (TextView)
-		// pageView.findViewById(R.id.vp_main_text);
-		// if (listPostAdapter.getCount() == 0) {
-		// textView.setText("下拉刷新看看~");
-		// } else {
-		// textView.setText("新闻列表");
-		// }
+		listPostAdapter.notifyDataSetInvalidated();
+		TextView textView = (TextView) pageView.findViewById(R.id.vp_main_text);
+		if (listPostAdapter.getCount() == 0) {
+			textView.setText("还没有内容，下拉刷新看看~");
+		} else {
+			textView.setText("新闻列表");
+		}
 
 		return view;
 	}
@@ -97,6 +92,9 @@ public class MainFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		// 设置标题
+		TextView titleTextView = (TextView) getActivity().findViewById(R.id.header_textview);
+		titleTextView.setText("首页");
 		// 每隔5秒钟切换一张图片
 		scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 		scheduledExecutorService
@@ -154,8 +152,8 @@ public class MainFragment extends Fragment {
 
 	private void initPostListView() {
 		listView = (PullToRefreshListView) view.findViewById(R.id.listview_main);
-		listView.getRefreshableView().setDivider(null);
-		listView.getRefreshableView().setVerticalScrollBarEnabled(false);
+		listView.getRefreshableView().setDivider(null); // 分隔符
+		listView.getRefreshableView().setVerticalScrollBarEnabled(false); // 竖直方向滚动条
 		listView.setMode(Mode.BOTH); // 设置上下拉模式
 		listView.setAdapter(listPostAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -360,8 +358,14 @@ public class MainFragment extends Fragment {
 					}
 				}).start();
 			}
-			listPostAdapter.notifyDataSetChanged();
+			listPostAdapter.notifyDataSetInvalidated();
 			int currentSize = listPostAdapter.getCount();
+			TextView textView = (TextView) pageView.findViewById(R.id.vp_main_text);
+			if (listPostAdapter.getCount() == 0) {
+				textView.setText("还没有内容，下拉刷新看看~");
+			} else {
+				textView.setText("新闻列表");
+			}
 			Toast toast;
 			if (currentSize - originalSize > 0) {
 				toast = Toast.makeText(getActivity(), "更新了" + postBeans.size() + "条数据",
@@ -400,13 +404,19 @@ public class MainFragment extends Fragment {
 		LinkedList<PostBean> postBeans = new LinkedList<PostBean>();
 		String[] collectlist = S.getStringSet(getActivity(), "timeline_list");
 
-		int max_id = 0;
+		for (int i = 1; i < (collectlist.length); i++) {
+			System.out.println(collectlist[i]);
+		}
 
 		for (int i = 1; i < (collectlist.length);) {
 			PostBean postBean = new PostBean();
 
-			max_id = Integer.valueOf(collectlist[i]) > max_id ? Integer.valueOf(collectlist[i])
-					: max_id;
+			try {
+				Integer.valueOf(collectlist[i]);
+			} catch (Exception e) {
+				e.printStackTrace();
+				break;
+			}
 
 			postBean.setId(Integer.valueOf(collectlist[i]));
 			postBean.setItemURL(collectlist[i + 1]);
@@ -422,8 +432,6 @@ public class MainFragment extends Fragment {
 			postBeans.add(postBean); // 添加到链表
 			i = i + 9;
 		}
-
-		S.put(getActivity(), "news_head_id", String.valueOf(max_id));
 
 		listPostAdapter.appendPost(postBeans);
 		listPostAdapter.sortPost();
@@ -466,4 +474,11 @@ public class MainFragment extends Fragment {
 		}
 		return false;
 	}
+
+	public void manualRefresh() {
+		listView.setMode(Mode.PULL_FROM_START);
+		listView.setRefreshing();
+		listView.setMode(Mode.BOTH);
+	}
+
 }

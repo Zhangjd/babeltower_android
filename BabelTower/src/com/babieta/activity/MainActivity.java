@@ -17,22 +17,22 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity {
 
 	public static MainFragment mainFragment = new MainFragment();
+	public static int mainFragmentFlag = 1;
+
 	private static SlidingMenu slidingMenu;
 	protected SwipeBackLayout layout;
 
-	public static int mainFragmentFlag = 1;
 	private long exitTime = System.currentTimeMillis();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("MainActivity","onCreate called");
+		Log.d("MainActivity", "onCreate called");
 
 		Netroid.init(this); // 外部HTTP库的初始化
 
@@ -40,42 +40,19 @@ public class MainActivity extends FragmentActivity {
 		slidingMenu = Util.initSlidingMenu(this);
 		switchFragment(MainActivity.mainFragment);
 		initHeaderButtonSwitch(); // 顶部按钮切换菜单
-
-		// temp : clear sharedPreferences
-		// S.clear(getApplicationContext());
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.d("MainActivity","onStart called");
-		
-		// 跟踪 Android 推送和应用的打开情况
+
+		// LeanCloud 跟踪 Android 推送和应用的打开情况
 		Intent intent = getIntent();
 		AVAnalytics.trackAppOpened(intent);
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-		Log.d("MainActivity","onResume called");
-		
-		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
-		titleTextView.setText(this.getString(R.string.header_name));
-	}
-
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		super.onRestart();
-		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
-		titleTextView.setText(this.getString(R.string.header_name));
-	}
-
-	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
-
 		if (keyCode == KeyEvent.KEYCODE_BACK && slidingMenu.isMenuShowing()) { // 滑动菜单显示的时候
 			slidingMenu.toggle();
 			return true;
@@ -114,7 +91,6 @@ public class MainActivity extends FragmentActivity {
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				slidingMenu.toggle();
 			}
 		});

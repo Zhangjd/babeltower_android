@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/header_but"
+            android:layout_toEndOf="@+id/header_but"
             android:ellipsize="end"
             android:singleLine="true"
             android:text="@string/header_name"

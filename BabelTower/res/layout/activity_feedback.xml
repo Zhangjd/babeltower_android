@@ -18,10 +18,14 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="50dp"
-        android:ems="10"
+        android:background="@drawable/mytextview_selector"
         android:hint="@string/feedback_babieta_content_hint"
         android:maxLength="256"
-        android:maxLines="10" >
+        android:maxLines="10"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp" >
 
         <requestFocus />
     </EditText>
@@ -35,20 +39,29 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="34dp"
-        android:ems="10"
+        android:background="@drawable/mytextview_selector"
         android:hint="@string/feedback_babieta_contact_hint"
         android:maxLength="64"
-        android:maxLines="3" />
+        android:maxLines="3"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp" />
 
     <Button
         android:id="@+id/feedback_submit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/feedback_contact"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_marginTop="40dp"
-        android:text="@string/feedback_submit" />
+        android:background="@drawable/mybutton_selector"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/feedback_submit"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/feedback_textview"
