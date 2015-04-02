@@ -8,13 +8,11 @@
         android:id="@+id/collect_fragment_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
         android:background="#ffefefef"
-        android:padding="10dp"
+        android:padding="18dp"
         android:text="@string/main_news_text"
         android:textColor="#ff000000"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
 
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"

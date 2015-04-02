@@ -1,4 +1,4 @@
-package com.babieta.view;
+package com.babieta.fragment;
 
 import java.util.LinkedList;
 

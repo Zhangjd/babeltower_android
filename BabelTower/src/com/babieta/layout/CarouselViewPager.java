@@ -1,4 +1,4 @@
-package com.babieta.view;
+package com.babieta.layout;
 
 import com.babieta.activity.MainActivity;
 
@@ -9,15 +9,15 @@ import android.view.MotionEvent;
 import android.widget.Toast;
 
 //内容循环展示（Carousel:旋转木马）
-public class CarouselViewPage extends ViewPager {
+public class CarouselViewPager extends ViewPager {
 
 	private float x1, y1, x2, y2;
 
-	public CarouselViewPage(Context context) {
+	public CarouselViewPager(Context context) {
 		super(context);
 	}
 
-	public CarouselViewPage(Context context, AttributeSet attrs) {
+	public CarouselViewPager(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 

@@ -4,8 +4,8 @@ import com.avos.avoscloud.AVAnalytics;
 import com.babieta.R;
 import com.babieta.base.Netroid;
 import com.babieta.base.Util;
+import com.babieta.fragment.MainFragment;
 import com.babieta.layout.SwipeBackLayout;
-import com.babieta.view.MainFragment;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 import android.app.Fragment;
@@ -68,6 +68,9 @@ public class MainActivity extends FragmentActivity {
 				finish();
 				System.exit(0);
 			}
+			return true;
+		} else if (keyCode == KeyEvent.KEYCODE_MENU) { // ²Ëµ¥°´¼ü
+			slidingMenu.toggle();
 			return true;
 		}
 

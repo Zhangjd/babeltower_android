@@ -21,7 +21,6 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,68 +67,59 @@ public class ListPostAdapter extends BaseAdapter {
 		return position;
 	}
 
-	// 在getView方法中重用convertView会引起滚动时图片排序的问题
-	private SparseArray<View> viewMap = new SparseArray<View>();
-
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-
-		View rowView = this.viewMap.get(position);
-
-		if (rowView == null) {
-			PostBean postBean = postBeans.get(position);
-			String imageURL;
-			if (postBean.getContentType().equals("album")) {
-				rowView = LayoutInflater.from(context).inflate(R.layout.listview_main_item_album,
-						parent, false);
-				imageURL = postBean.getHeaderImageUrl();
-			} else {
-				rowView = LayoutInflater.from(context).inflate(R.layout.listview_main_item, parent,
-						false);
-				imageURL = postBean.getImageUrl();
-			}
-			final String final_imageURL = imageURL;
-
-			titleTextView = (TextView) rowView.findViewById(R.id.post_list_text);
-			publisherTextView = (TextView) rowView.findViewById(R.id.post_list_publisher);
-			timeTextView = (TextView) rowView.findViewById(R.id.post_list_updated_at);
-			imageView = (ImageView) rowView.findViewById(R.id.post_list_image);
-
-			// 给 ImageView 设置一个 tag (作用见下面)
-			imageView.setTag(final_imageURL);
-
-			titleTextView.setText(postBean.getTitle()); // TextView换行?Util.getText
-			publisherTextView.setText(Util.getText(postBean.getAuthor()));
-
-			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"; // 设置时间TextView
-			Locale locale = new Locale("zh", "CN");
-			SimpleDateFormat format = new SimpleDateFormat(pattern, locale);
-			String dateStr = postBean.getUpdatedAt();
-			try {
-				Date date = format.parse(dateStr);
-				SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd", locale);
-				timeTextView.setText(f.format(date));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-
-			if (final_imageURL != null) {
-				ImageLoader.getInstance().displayImage(final_imageURL, imageView, options,
-						new SimpleImageLoadingListener() {
-							@Override
-							public void onLoadingStarted(String imageUri, View view) {
-								imageView.setBackgroundColor(Color.rgb(240, 240, 240));
-							}
-						});
-			} else {
-				log.w("null imgURL");
-			}
-			viewMap.put(position, rowView);
+		PostBean postBean = postBeans.get(position);
+		String imageURL;
+		if (postBean.getContentType().equals("album")) {
+			convertView = LayoutInflater.from(context).inflate(R.layout.listview_main_item_album,
+					parent, false);
+			imageURL = postBean.getHeaderImageUrl();
 		} else {
-
+			convertView = LayoutInflater.from(context).inflate(R.layout.listview_main_item, parent,
+					false);
+			imageURL = postBean.getImageUrl();
 		}
-		rowView.setTag(position);
-		return rowView;
+
+		titleTextView = (TextView) convertView.findViewById(R.id.post_list_text);
+		publisherTextView = (TextView) convertView.findViewById(R.id.post_list_publisher);
+		timeTextView = (TextView) convertView.findViewById(R.id.post_list_updated_at);
+		imageView = (ImageView) convertView.findViewById(R.id.post_list_image);
+
+		// 给 ImageView 设置一个 tag (作用见下面)
+		imageView.setTag(imageURL);
+
+		titleTextView.setText(postBean.getTitle()); // TextView换行?Util.getText
+		publisherTextView.setText(Util.getText(postBean.getAuthor()));
+
+		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"; // 设置时间TextView
+		Locale locale = new Locale("zh", "CN");
+		SimpleDateFormat format = new SimpleDateFormat(pattern, locale);
+		String dateStr = postBean.getCreatedAt();
+		try {
+			Date date = format.parse(dateStr);
+			SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd", locale);
+			timeTextView.setText(f.format(date));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		// ListView 异步加载图片之所以错位的根本原因是重用了 convertView 且有异步操作
+		// 最简单的解决方法就是网上说的，给 ImageView 设置一个 tag, 并预设一个图片
+		if (imageURL != null && imageView.getTag() != null && imageView.getTag().equals(imageURL)) {
+			ImageLoader.getInstance().displayImage(imageURL, imageView, options,
+					new SimpleImageLoadingListener() {
+						@Override
+						public void onLoadingStarted(String imageUri, View view) {
+							imageView.setBackgroundColor(Color.rgb(240, 240, 240));
+						}
+					});
+		} else {
+			log.w("null imgURL or tag not match imgView");
+		}
+
+		convertView.setTag(position);
+		return convertView;
 	}
 
 	// 添加到链表头部

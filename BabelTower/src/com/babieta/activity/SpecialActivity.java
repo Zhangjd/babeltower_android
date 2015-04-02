@@ -48,7 +48,7 @@ public class SpecialActivity extends SwipeBackActivity {
 	private ProgressDialog mProgressDialog;
 
 	private String id = "";
-	// private String itemURL = "";
+	private String itemURL = "";
 	private String headerImageURL = "";
 	private String title = "";
 	private String description = "";
@@ -71,11 +71,17 @@ public class SpecialActivity extends SwipeBackActivity {
 		// get data from bundle
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
-		id = bundle.getString("id");
-		// itemURL = bundle.getString("itemURL");
+		id = String.valueOf(bundle.getInt("id", 0));
+		itemURL = bundle.getString("itemURL");
 		title = bundle.getString("title");
 		description = bundle.getString("description");
-		headerImageURL = bundle.getString("headerImageURL");
+		headerImageURL = bundle.getString("ImageURL");
+
+		// ÐÞÕýId
+		if (id.equals("0")) {
+			id = itemURL.replace(ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_ARTICLE, "");
+		}
+
 		subContentsURL = ApiUrl.BABIETA_BASE_URL + "/v1/contents/" + id + "/subcontents";
 
 		special_title = (TextView) findViewById(R.id.special_title);
@@ -89,18 +95,19 @@ public class SpecialActivity extends SwipeBackActivity {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				String idStr = data.get(arg2).get("id");
-				System.out.println(id);
-
 				Intent intent = new Intent(SpecialActivity.this, WebViewActivity.class);
-				Bundle urlBundle = new Bundle();
-				urlBundle.putCharSequence("itemURL", ApiUrl.BABIETA_BASE_URL
-						+ ApiUrl.BABIETA_ARTICLE + idStr);
-				urlBundle.putCharSequence("title", data.get(arg2).get("title"));
-				urlBundle.putCharSequence("ImageURL", data.get(arg2).get("image"));
-				urlBundle.putCharSequence("author", data.get(arg2).get("author"));
-				urlBundle.putCharSequence("updated_at", data.get(arg2).get("updated_at"));
-				intent.putExtras(urlBundle);
+				Bundle bundle = new Bundle();
+				bundle.putInt("id", Integer.valueOf(data.get(arg2).get("id")));
+				bundle.putCharSequence("content_type", data.get(arg2).get("content_type"));
+				bundle.putCharSequence("itemURL", ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_ARTICLE
+						+ data.get(arg2).get("id"));
+				bundle.putCharSequence("title", data.get(arg2).get("title"));
+				bundle.putCharSequence("description", data.get(arg2).get("description"));
+				bundle.putCharSequence("ImageURL", data.get(arg2).get("ImageURL"));
+				bundle.putCharSequence("author", data.get(arg2).get("author"));
+				bundle.putCharSequence("created_at", data.get(arg2).get("created_at"));
+				bundle.putCharSequence("updated_at", data.get(arg2).get("updated_at"));
+				intent.putExtras(bundle);
 				startActivity(intent);
 			}
 		});
@@ -144,7 +151,7 @@ public class SpecialActivity extends SwipeBackActivity {
 						try {
 							if (response.has("status") && response.getInt("status") == 0) {
 								JSONArray jsonArray = (JSONArray) response.get("list");
-								for (int i = 0; i < jsonArray.length(); i++) {
+								for (int i = jsonArray.length() - 1; i >= 0; i--) {
 									Map<String, String> map = new HashMap<String, String>();
 									JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 									String subTitle = jsonObject.getString("title");
@@ -152,13 +159,18 @@ public class SpecialActivity extends SwipeBackActivity {
 									String subAuthor = jsonObject.getJSONObject("author")
 											.getString("display_name");
 									String subUpdated_at = jsonObject.getString("updated_at");
+									String subCreated_at = jsonObject.getString("created_at");
 									String subId = String.valueOf(jsonObject.getInt("id"));
-									// System.out.println(subTitle);
-									map.put("title", subTitle);
-									map.put("image", subImage);
-									map.put("author", subAuthor);
-									map.put("updated_at", subUpdated_at);
+
 									map.put("id", subId);
+									map.put("content_type", jsonObject.getString("content_type"));
+									map.put("title", subTitle);
+									map.put("description", jsonObject.getString("description"));
+									map.put("ImageURL", subImage);
+									map.put("author", subAuthor);
+									map.put("created_at", subCreated_at);
+									map.put("updated_at", subUpdated_at);
+
 									data.add(map);
 								}
 								changeListView();
@@ -183,6 +195,7 @@ public class SpecialActivity extends SwipeBackActivity {
 
 	private void loadHeaderImage() {
 		if (headerImageURL != "") {
+			log.w(headerImageURL);
 			ImageLoader.getInstance().displayImage(headerImageURL, special_header_image,
 					Util.getImageOption(getApplicationContext()));
 		}

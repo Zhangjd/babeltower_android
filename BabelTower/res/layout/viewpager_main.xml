@@ -5,7 +5,7 @@
     android:background="#ffefefef"
     android:orientation="vertical" >
 
-    <com.babieta.view.CarouselViewPage
+    <com.babieta.layout.CarouselViewPager
         android:id="@+id/vp_main"
         android:layout_width="fill_parent"
         android:layout_height="225dp" />

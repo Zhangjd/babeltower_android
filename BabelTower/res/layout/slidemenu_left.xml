@@ -27,7 +27,7 @@
 
         <fragment
             android:id="@+id/sliging_list"
-            android:name="com.babieta.view.SlidingListFragment"
+            android:name="com.babieta.fragment.SlidingListFragment"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
     </LinearLayout>

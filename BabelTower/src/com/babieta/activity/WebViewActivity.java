@@ -23,7 +23,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,9 +32,9 @@ public class WebViewActivity extends SwipeBackActivity {
 	private WebView webView;
 	private int collectFlag = 0;
 
-	private Button likeButton;
+	private ImageButton likeButton;
 	private TextView likeTextView;
-	private Button collectButton;
+	private ImageButton collectButton;
 	private TextView colletTextView;
 	private ImageButton backButton;
 	private ProgressDialog mProgressDialog;
@@ -176,9 +175,9 @@ public class WebViewActivity extends SwipeBackActivity {
 	}
 
 	private void initEventsRegister() {
-		this.likeButton = (Button) findViewById(R.id.bottombar_like);
+		this.likeButton = (ImageButton) findViewById(R.id.bottombar_like);
 		this.likeTextView = (TextView) findViewById(R.id.bottombar_like_counter);
-		this.collectButton = (Button) findViewById(R.id.bottombar_collect);
+		this.collectButton = (ImageButton) findViewById(R.id.bottombar_collect);
 		this.colletTextView = (TextView) findViewById(R.id.bottombar_pageview_counter);
 		this.backButton = (ImageButton) findViewById(R.id.back_button);
 
@@ -187,7 +186,7 @@ public class WebViewActivity extends SwipeBackActivity {
 		for (int i = 0; i < strings.length; i++) {
 			if (itemURL.equals(strings[i])) {
 				collectFlag = 1;
-				collectButton.setBackgroundResource(R.drawable.news_collected);
+				collectButton.setImageResource(R.drawable.news_collected);
 				break;
 			}
 		}
@@ -197,7 +196,7 @@ public class WebViewActivity extends SwipeBackActivity {
 		for (int i = 1; i < likeSet.length; i++) {
 			if (itemURL.equals(likeSet[i])) {
 				likeFlag = true;
-				likeButton.setBackgroundResource(R.drawable.message_vote);
+				likeButton.setImageResource(R.drawable.message_vote);
 				break;
 			}
 		}
@@ -248,7 +247,7 @@ public class WebViewActivity extends SwipeBackActivity {
 		likeFlag = true;
 		int cnt = Integer.valueOf(likeTextView.getText().toString());
 		likeTextView.setText(String.valueOf(++cnt));
-		likeButton.setBackgroundResource(R.drawable.message_vote);
+		likeButton.setImageResource(R.drawable.message_vote);
 		S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
 		Toast.makeText(WebViewActivity.this, "Nice!", Toast.LENGTH_SHORT).show(); // Toast
 	}
@@ -289,7 +288,7 @@ public class WebViewActivity extends SwipeBackActivity {
 
 			if (status) {
 				collectFlag = 0;
-				collectButton.setBackgroundResource(R.drawable.news_collect);
+				collectButton.setImageResource(R.drawable.news_collect);
 				Toast.makeText(WebViewActivity.this, "已取消收藏", Toast.LENGTH_SHORT).show();
 			} else {
 				System.out.println("取消收藏失败");
@@ -300,7 +299,7 @@ public class WebViewActivity extends SwipeBackActivity {
 
 			if (status) {
 				collectFlag = 1;
-				collectButton.setBackgroundResource(R.drawable.news_collected);
+				collectButton.setImageResource(R.drawable.news_collected);
 
 				TextView collectCnt = (TextView) findViewById(R.id.bottombar_pageview_counter);
 				int cnt = Integer.valueOf((String) collectCnt.getText());

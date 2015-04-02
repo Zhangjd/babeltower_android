@@ -1,4 +1,4 @@
-package com.babieta.view;
+package com.babieta.fragment;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
@@ -17,6 +17,7 @@ import com.babieta.base.ApiData;
 import com.babieta.base.ApiUrl;
 import com.babieta.base.S;
 import com.babieta.bean.PostBean;
+import com.babieta.layout.CarouselViewPager;
 import com.babieta.layout.IndicatorLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -50,7 +51,7 @@ import android.widget.Toast;
 public class MainFragment extends Fragment {
 	private View view;
 	private View pageView;
-	private CarouselViewPage viewPager;
+	private CarouselViewPager viewPager;
 	private IndicatorLayout indicatorLayout;
 	private PageCarouselAdapter pageCarouselAdapter;
 
@@ -78,7 +79,7 @@ public class MainFragment extends Fragment {
 		this.initPostListView(); // timeline部分
 		this.initPageView(); // focus部分
 
-		listPostAdapter.notifyDataSetInvalidated();
+		listPostAdapter.notifyDataSetChanged();
 		TextView textView = (TextView) pageView.findViewById(R.id.vp_main_text);
 		if (listPostAdapter.getCount() == 0) {
 			textView.setText("还没有内容，下拉刷新看看~");
@@ -116,7 +117,7 @@ public class MainFragment extends Fragment {
 	@SuppressLint("InflateParams")
 	private void initPageView() {
 		pageView = LayoutInflater.from(getActivity()).inflate(R.layout.viewpager_main, null);
-		viewPager = (CarouselViewPage) pageView.findViewById(R.id.vp_main);
+		viewPager = (CarouselViewPager) pageView.findViewById(R.id.vp_main);
 		pageCarouselAdapter = new PageCarouselAdapter(getActivity());
 		viewPager.setAdapter(pageCarouselAdapter);
 		indicatorLayout = (IndicatorLayout) pageView.findViewById(R.id.indicate_main);
@@ -358,7 +359,7 @@ public class MainFragment extends Fragment {
 					}
 				}).start();
 			}
-			listPostAdapter.notifyDataSetInvalidated();
+			listPostAdapter.notifyDataSetChanged();
 			int currentSize = listPostAdapter.getCount();
 			TextView textView = (TextView) pageView.findViewById(R.id.vp_main_text);
 			if (listPostAdapter.getCount() == 0) {
@@ -368,7 +369,7 @@ public class MainFragment extends Fragment {
 			}
 			Toast toast;
 			if (currentSize - originalSize > 0) {
-				toast = Toast.makeText(getActivity(), "更新了" + postBeans.size() + "条数据",
+				toast = Toast.makeText(getActivity(), "更新了" + (currentSize - originalSize) + "条数据",
 						Toast.LENGTH_SHORT);
 			} else {
 				toast = Toast.makeText(getActivity(), "没有新的内容", Toast.LENGTH_SHORT);
@@ -392,7 +393,7 @@ public class MainFragment extends Fragment {
 			S.addStringSet(getActivity(), "timeline_list", bean.getItemURL()); // 2链接
 			S.addStringSet(getActivity(), "timeline_list", bean.getTitle()); // 3标题
 			S.addStringSet(getActivity(), "timeline_list", bean.getAuthor()); // 4作者
-			S.addStringSet(getActivity(), "timeline_list", bean.getUpdatedAt()); // 5时间
+			S.addStringSet(getActivity(), "timeline_list", bean.getCreatedAt()); // 5时间
 			S.addStringSet(getActivity(), "timeline_list", bean.getImageUrl()); // 6图片地址
 			S.addStringSet(getActivity(), "timeline_list", bean.getHeaderImageUrl()); // 7头图URL
 			S.addStringSet(getActivity(), "timeline_list", bean.getDescription()); // 8注释

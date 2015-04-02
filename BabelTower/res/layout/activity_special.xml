@@ -19,9 +19,9 @@
         <ImageView
             android:id="@+id/special_header_image"
             android:layout_width="fill_parent"
-            android:layout_height="180dp"
+            android:layout_height="225dp"
             android:scaleType="fitXY"
-            android:src="@android:drawable/alert_light_frame" />
+            android:src="@drawable/dark_menu_avatar_bg_mask" />
 
         <TextView
             android:id="@+id/special_title"
@@ -41,8 +41,8 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
-            android:textColor="#969696"
-            android:text="special_description" />
+            android:text="special_description"
+            android:textColor="#969696" />
 
         <View
             android:layout_width="fill_parent"
@@ -57,8 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp" >
+            android:layout_marginRight="20dp" >
         </ListView>
     </LinearLayout>
 
