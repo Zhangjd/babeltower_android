@@ -1,6 +1,9 @@
 package com.babieta.adapter;
 
+import java.util.LinkedList;
+
 import com.babieta.R;
+import com.babieta.bean.PostBean;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -20,11 +23,7 @@ import android.widget.TextView;
 public class PageCarouselAdapter extends PagerAdapter {
 	private Context context;
 	private DisplayImageOptions options;
-	private String[] imageUrls = {
-			"http://218.192.166.167:3030/system/contents/header_images/000/000/025/medium/gyarados_by_krukmeister-d6ikwig.png?1426182790",
-			"http://218.192.166.167:3030/system/contents/header_images/000/000/023/medium/minimal_wind_waker_wallpaper__with_shadow__by_cheetashock-d7injfy.png?1426182497",
-			"http://218.192.166.167:3030/system/contents/header_images/000/000/019/medium/_request__love_live____yazawa_nico_by_krukmeister-d84adnf.png?1426090886",
-			"http://218.192.166.167:3030/system/contents/header_images/000/000/015/medium/Cogumelo3_.png?1426076914" };
+	private LinkedList<PostBean> postBeans = new LinkedList<PostBean>();
 
 	public PageCarouselAdapter(Context context) {
 		this.context = context;
@@ -35,10 +34,14 @@ public class PageCarouselAdapter extends PagerAdapter {
 				.displayer(new FadeInBitmapDisplayer(300)).build();
 	}
 
+	public void setPostBeans(LinkedList<PostBean> postBeans) {
+		this.postBeans = postBeans;
+	}
+
 	// 返回要滑动的View的个数
 	@Override
 	public int getCount() {
-		return imageUrls.length;
+		return postBeans.size();
 	}
 
 	// 做了两件事，第一：将当前视图添加到container中，第二：返回当前View
@@ -46,9 +49,9 @@ public class PageCarouselAdapter extends PagerAdapter {
 	public Object instantiateItem(ViewGroup container, int position) {
 		final View view = LayoutInflater.from(context).inflate(R.layout.viewpage, container, false);
 		final ImageView imageView = (ImageView) view.findViewById(R.id.view_page_image);
-	
-		ImageLoader.getInstance().displayImage(imageUrls[position], imageView, options,
-				new SimpleImageLoadingListener() {
+
+		ImageLoader.getInstance().displayImage(postBeans.get(position).getHeaderImageUrl(),
+				imageView, options, new SimpleImageLoadingListener() {
 					@Override
 					public void onLoadingStarted(String imageUri, View view) {
 						imageView.setBackgroundColor(Color.rgb(240, 240, 240));
@@ -56,8 +59,8 @@ public class PageCarouselAdapter extends PagerAdapter {
 				});
 
 		TextView textView = (TextView) view.findViewById(R.id.view_page_title);
-		textView.setText("测试标题 " + position);
-
+		textView.setText(postBeans.get(position).getTitle() + position);
+		
 		container.addView(view);
 		return view;
 	}

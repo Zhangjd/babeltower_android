@@ -10,6 +10,7 @@ import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
 import com.babieta.base.Netroid;
 import com.babieta.base.S;
+import com.babieta.base.Util;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
 import com.duowan.mobile.netroid.request.StringRequest;
 import com.duowan.mobile.netroid.AuthFailureError;
@@ -28,7 +29,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class AlbumWebViewActivity extends SwipeBackActivity {
 
@@ -169,8 +169,6 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 		// 将不允许被JS访问。
 		@JavascriptInterface
 		public void openImage(String img) {
-			System.out.println(img); // 该图片的URL
-
 			Intent intent = new Intent();
 			Bundle bundle = new Bundle();
 			bundle.putCharSequence("clickedImage", img);
@@ -270,7 +268,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 		Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
 			@Override
 			public void onSuccess(String arg0) {
-				System.out.println(arg0);
+				log.d(arg0);
 			}
 		}));
 
@@ -280,7 +278,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 		likeTextView.setText(String.valueOf(++cnt));
 		likeButton.setImageResource(R.drawable.message_vote);
 		S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
-		Toast.makeText(AlbumWebViewActivity.this, "Nice!", Toast.LENGTH_SHORT).show(); // Toast
+		Util.showToast(AlbumWebViewActivity.this, "Nice!");
 	}
 
 	public class PutRequest extends StringRequest {
@@ -315,14 +313,12 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 			}
 			S.put(getApplicationContext(), "collected_list", tmp_all);
 
-			System.out.println("tmp_all : " + tmp_all);
-
 			if (status) {
 				collectFlag = 0;
 				collectButton.setImageResource(R.drawable.news_collect);
-				Toast.makeText(AlbumWebViewActivity.this, "已取消收藏", Toast.LENGTH_SHORT).show();
+				Util.showToast(AlbumWebViewActivity.this, "已取消收藏");
 			} else {
-				System.out.println("取消收藏失败");
+				log.w("取消收藏失败");
 			}
 		} else { // 收藏
 			Boolean status = S.addStringSet(getApplicationContext(), "collected_list",
@@ -346,9 +342,9 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 				S.addStringSet(getApplicationContext(), "collected_list", created_at);
 				S.addStringSet(getApplicationContext(), "collected_list", updated_at);
 
-				Toast.makeText(AlbumWebViewActivity.this, "已收藏", Toast.LENGTH_SHORT).show();
+				Util.showToast(AlbumWebViewActivity.this, "收藏成功");
 			} else {
-				System.out.println("收藏失败");
+				log.w("收藏失败");
 			}
 		}
 	}

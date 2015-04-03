@@ -6,30 +6,33 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
-import com.babieta.activity.AlbumWebViewActivity;
-import com.babieta.activity.SpecialActivity;
-import com.babieta.activity.VideoActivity;
-import com.babieta.activity.WebViewActivity;
 import com.babieta.adapter.ListPostAdapter;
 import com.babieta.adapter.PageCarouselAdapter;
 import com.babieta.base.ApiData;
 import com.babieta.base.ApiUrl;
+import com.babieta.base.Netroid;
 import com.babieta.base.S;
+import com.babieta.base.Util;
 import com.babieta.bean.PostBean;
 import com.babieta.layout.CarouselViewPager;
 import com.babieta.layout.IndicatorLayout;
+import com.duowan.mobile.netroid.Listener;
+import com.duowan.mobile.netroid.NetroidError;
+import com.duowan.mobile.netroid.request.JsonObjectRequest;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -37,8 +40,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateUtils;
-import android.view.ContextThemeWrapper;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,6 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class MainFragment extends Fragment {
 	private View view;
@@ -57,27 +57,29 @@ public class MainFragment extends Fragment {
 
 	private PullToRefreshListView listView;
 	private ListPostAdapter listPostAdapter;
-	private LinkedList<PostBean> postBeans;
-
-	private int currentViewPagerItem; // 当前页面
-	private ScheduledExecutorService scheduledExecutorService;
+	private ScheduledExecutorService scheduledExecutorService; // 自动翻页ViewPager的服务
 	private MyHandler mHandler = new MyHandler(this);
 
-	private String targetURL;
+	// 关于Focus ViewPager的数据
+	private int currentViewPagerItem; // 当前ViewPager页面索引
+	private boolean focusLoadedFlag = false;
+	private LinkedList<PostBean> focusData = new LinkedList<PostBean>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initOnCreate();
-		loadTimeline();
+		loadTimeline(); // 从本地读取Timeline
 	}
 
 	// Fragment在不可见的时候会回收所有View，所以在出栈的时候上一个Fragment需要重新初始化View
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.view = inflater.inflate(R.layout.listview_main, container, false);
-		this.initPostListView(); // timeline部分
-		this.initPageView(); // focus部分
+		this.initPostListView(); // Timeline部分
+		this.initPageView(); // Focus部分
+		if (focusLoadedFlag == false)
+			requestForFocus();
 
 		listPostAdapter.notifyDataSetChanged();
 		TextView textView = (TextView) pageView.findViewById(R.id.vp_main_text);
@@ -97,14 +99,25 @@ public class MainFragment extends Fragment {
 		TextView titleTextView = (TextView) getActivity().findViewById(R.id.header_textview);
 		titleTextView.setText("首页");
 		// 每隔5秒钟切换一张图片
-		scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-		scheduledExecutorService
-				.scheduleWithFixedDelay(new ViewPagerTask(), 5, 5, TimeUnit.SECONDS);
+		startViewPagerTask();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
+		// 停止翻页
+		stopViewPagerTask();
+	}
+
+	// 每隔5秒钟切换一张图片
+	public void startViewPagerTask() {
+		scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+		scheduledExecutorService
+				.scheduleWithFixedDelay(new ViewPagerTask(), 5, 5, TimeUnit.SECONDS);
+	}
+
+	// 停止翻页
+	public void stopViewPagerTask() {
 		scheduledExecutorService.shutdown();
 	}
 
@@ -119,6 +132,7 @@ public class MainFragment extends Fragment {
 		pageView = LayoutInflater.from(getActivity()).inflate(R.layout.viewpager_main, null);
 		viewPager = (CarouselViewPager) pageView.findViewById(R.id.vp_main);
 		pageCarouselAdapter = new PageCarouselAdapter(getActivity());
+		pageCarouselAdapter.setPostBeans(focusData);
 		viewPager.setAdapter(pageCarouselAdapter);
 		indicatorLayout = (IndicatorLayout) pageView.findViewById(R.id.indicate_main);
 		indicatorLayout.setViewPage(viewPager);
@@ -157,120 +171,19 @@ public class MainFragment extends Fragment {
 		listView.getRefreshableView().setVerticalScrollBarEnabled(false); // 竖直方向滚动条
 		listView.setMode(Mode.BOTH); // 设置上下拉模式
 		listView.setAdapter(listPostAdapter);
+
+		// 设置点击Timeline Item的监听
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			// 点击item跳转到WebView中
-			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
-				// 取出item的URL , pos起始位置2??
-				postBeans = listPostAdapter.postBeans;
-				String itemContentType = postBeans.get(pos - 2).getContentType();
-				final int pos_final = pos;
-
-				if (itemContentType.equals("article")) {
-					Toast.makeText(getActivity(), "文章类型", Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(getActivity(), WebViewActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putInt("id", postBeans.get(pos - 2).getId());
-					bundle.putCharSequence("content_type", postBeans.get(pos - 2).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos - 2).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 2).getTitle());
-					bundle.putCharSequence("description", postBeans.get(pos - 2).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos - 2).getAuthor());
-					bundle.putCharSequence("created_at", postBeans.get(pos - 2).getCreatedAt());
-					bundle.putCharSequence("updated_at", postBeans.get(pos - 2).getUpdatedAt());
-					intent.putExtras(bundle);
-					startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.base_slide_right_in,
-							R.anim.base_slide_remain);
-				} else if (itemContentType.equals("album")) {
-					Toast.makeText(getActivity(), "相册类型", Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(getActivity(), AlbumWebViewActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putInt("id", postBeans.get(pos - 2).getId());
-					bundle.putCharSequence("content_type", postBeans.get(pos - 2).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos - 2).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 2).getTitle());
-					bundle.putCharSequence("description", postBeans.get(pos - 2).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getHeaderImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos - 2).getAuthor());
-					bundle.putCharSequence("created_at", postBeans.get(pos - 2).getCreatedAt());
-					bundle.putCharSequence("updated_at", postBeans.get(pos - 2).getUpdatedAt());
-					intent.putExtras(bundle);
-					startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.base_slide_right_in,
-							R.anim.base_slide_remain);
-				} else if (itemContentType.equals("video")) {
-					ContextThemeWrapper themedContext = new ContextThemeWrapper(getActivity(),
-							android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
-					AlertDialog.Builder builder = new AlertDialog.Builder(themedContext);
-					AlertDialog alertDialog = builder.create();
-					alertDialog.setMessage("我是一个视频,建议在wifi条件下开我哦");
-					alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "好的嘛", // 反人类的安卓设定,确定键在右边
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-									Intent intent = new Intent(getActivity(), VideoActivity.class);
-									Bundle bundle = new Bundle();
-									bundle.putInt("id", postBeans.get(pos_final - 2).getId());
-									bundle.putCharSequence("content_type",
-											postBeans.get(pos_final - 2).getContentType());
-									bundle.putCharSequence("itemURL", postBeans.get(pos_final - 2)
-											.getItemURL());
-									bundle.putCharSequence("title", postBeans.get(pos_final - 2)
-											.getTitle());
-									bundle.putCharSequence("description",
-											postBeans.get(pos_final - 2).getDescription());
-									bundle.putCharSequence("ImageURL", postBeans.get(pos_final - 2)
-											.getImageUrl());
-									bundle.putCharSequence("author", postBeans.get(pos_final - 2)
-											.getAuthor());
-									bundle.putCharSequence("created_at",
-											postBeans.get(pos_final - 2).getCreatedAt());
-									bundle.putCharSequence("updated_at",
-											postBeans.get(pos_final - 2).getUpdatedAt());
-									intent.putExtras(bundle);
-									startActivity(intent);
-									getActivity().overridePendingTransition(
-											R.anim.base_slide_right_in, R.anim.base_slide_remain);
-								}
-							});
-					alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "再等等",
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-									return;
-								}
-							});
-					alertDialog.show();
-
-				} else if (itemContentType.equals("special")) {
-					Toast.makeText(getActivity(), "专题类型", Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(getActivity(), SpecialActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putInt("id", postBeans.get(pos - 2).getId());
-					bundle.putCharSequence("content_type", postBeans.get(pos - 2).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos - 2).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 2).getTitle());
-					bundle.putCharSequence("description", postBeans.get(pos - 2).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos - 2).getHeaderImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos - 2).getAuthor());
-					bundle.putCharSequence("created_at", postBeans.get(pos - 2).getCreatedAt());
-					bundle.putCharSequence("updated_at", postBeans.get(pos - 2).getUpdatedAt());
-					intent.putExtras(bundle);
-					startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.base_slide_right_in,
-							R.anim.base_slide_remain);
-				} else {
-					Toast.makeText(getActivity(), "未知类型", Toast.LENGTH_SHORT).show();
-				}
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				//position起始位置是2,因为前面放置了ViewPager和TextView
+				PostBean postBean = listPostAdapter.postBeans.get(position - 2);
+				Activity activity = getActivity();
+				Util.handleItemClick(activity, postBean);
 			}
 		});
 
+		// 设置上下拉的监听
 		listView.setOnRefreshListener(new OnRefreshListener2<ListView>() {
 			// 顶部下拉刷新
 			@Override
@@ -298,13 +211,15 @@ public class MainFragment extends Fragment {
 						handlePostExecute(result, 0);
 					}
 				}.execute();
+
+				requestForFocus();
 			}
 
 			// 底部上拉刷新
 			@Override
 			public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
 				int count = listPostAdapter.getCount();
-
+				String targetURL;
 				if (count == 0) {
 					targetURL = ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_CONTENT_LIST;
 				} else {
@@ -319,13 +234,14 @@ public class MainFragment extends Fragment {
 					targetURL = ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_CONTENT_LIST + "?max_id="
 							+ (minCnt - 1);
 				}
+				final String final_targetURL = targetURL;
 
 				new AsyncTask<Void, Void, String>() {
 
 					@Override
 					protected String doInBackground(Void... arg0) {
 						if (isNetworkConnected(getActivity())) {
-							return ApiData.httpGet(targetURL);
+							return ApiData.httpGet(final_targetURL);
 						} else {
 							return "";
 						}
@@ -339,12 +255,13 @@ public class MainFragment extends Fragment {
 		});
 	}
 
+	// 解析Timeline接口返回的数据
 	private void handlePostExecute(String result, int type) {
 		if (!isNetworkConnected(getActivity())) {
-			Toast.makeText(getActivity(), "没有可用网络,请稍后再试!", Toast.LENGTH_SHORT).show();
+			Util.showToast(getActivity(), "没有可用网络,请检查网络设置");
 			listView.onRefreshComplete();
 		} else if (result == "") {
-			Toast.makeText(getActivity(), "加载失败,请稍后再试!", Toast.LENGTH_SHORT).show();
+			Util.showToast(getActivity(), "加载失败,请稍后再试");
 			listView.onRefreshComplete();
 		} else {
 			int originalSize = listPostAdapter.getCount();
@@ -367,15 +284,11 @@ public class MainFragment extends Fragment {
 			} else {
 				textView.setText("新闻列表");
 			}
-			Toast toast;
 			if (currentSize - originalSize > 0) {
-				toast = Toast.makeText(getActivity(), "更新了" + (currentSize - originalSize) + "条数据",
-						Toast.LENGTH_SHORT);
+				Util.showToast(getActivity(), "更新了" + (currentSize - originalSize) + "条数据");
 			} else {
-				toast = Toast.makeText(getActivity(), "没有新的内容", Toast.LENGTH_SHORT);
+				Util.showToast(getActivity(), "没有新的内容");
 			}
-			toast.setGravity(Gravity.TOP, 0, 150);
-			toast.show();
 			listView.onRefreshComplete();
 		}
 	}
@@ -401,7 +314,8 @@ public class MainFragment extends Fragment {
 		}
 	}
 
-	private void loadTimeline() {
+	// 从本地缓存读取TimeLine
+	private boolean loadTimeline() {
 		LinkedList<PostBean> postBeans = new LinkedList<PostBean>();
 		String[] collectlist = S.getStringSet(getActivity(), "timeline_list");
 
@@ -416,7 +330,7 @@ public class MainFragment extends Fragment {
 				Integer.valueOf(collectlist[i]);
 			} catch (Exception e) {
 				e.printStackTrace();
-				break;
+				return false;
 			}
 
 			postBean.setId(Integer.valueOf(collectlist[i]));
@@ -436,8 +350,52 @@ public class MainFragment extends Fragment {
 
 		listPostAdapter.appendPost(postBeans);
 		listPostAdapter.sortPost();
+		return true;
 	}
 
+	// 网络读取Focus内容
+	private boolean requestForFocus() {
+		if (!isNetworkConnected(getActivity())) {
+			Util.showToast(getActivity(), "没有可用网络,请检查网络设置");
+			return false;
+		} else {
+			JSONObject jsonRequest = null;
+			String url = ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_CONTENT_LIST + "?on_focus=true";
+			JsonObjectRequest request = new JsonObjectRequest(url, jsonRequest,
+					new Listener<JSONObject>() {
+						@Override
+						public void onSuccess(JSONObject response) {
+							try {
+								if (response.has("status") && response.getInt("status") == 0) {
+									String result = response.toString();
+									focusData = PostBean.parseSection(result, getActivity());
+									pageCarouselAdapter.setPostBeans(focusData);
+									pageCarouselAdapter.notifyDataSetChanged();
+									indicatorLayout.setViewPage(viewPager); // 设置focus右下角的指示器
+									focusLoadedFlag = true;
+								} else {
+									// 接口出错
+								}
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+						}
+
+						@Override
+						public void onError(NetroidError error) {
+							String data = error.getMessage();
+							log.w(data);
+							Util.showToast(getActivity(), "读取数据失败,请检查网络或稍后再试");
+						}
+					});
+			// 设置请求标识，这个标识可用于终止该请求时传入的Key
+			request.setTag("LOAD_FOCUS");
+			Netroid.addRequest(request);
+		}
+		return true;
+	}
+
+	// 检测网络连接
 	public boolean isNetworkConnected(Context context) {
 		if (context != null) {
 			ConnectivityManager mConnectivityManager = (ConnectivityManager) context
@@ -450,6 +408,7 @@ public class MainFragment extends Fragment {
 		return false;
 	}
 
+	// 检测Wifi连接
 	public boolean isWifiConnected(Context context) {
 		if (context != null) {
 			ConnectivityManager mConnectivityManager = (ConnectivityManager) context
@@ -463,6 +422,7 @@ public class MainFragment extends Fragment {
 		return false;
 	}
 
+	// 检测移动数据连接
 	public boolean isMobileConnected(Context context) {
 		if (context != null) {
 			ConnectivityManager mConnectivityManager = (ConnectivityManager) context
@@ -481,5 +441,10 @@ public class MainFragment extends Fragment {
 		listView.setRefreshing();
 		listView.setMode(Mode.BOTH);
 	}
-
+	
+	public void handleFocusClick(int index){
+		PostBean postBean = focusData.get(index);
+		Activity activity = getActivity();
+		Util.handleItemClick(activity, postBean);
+	}
 }

@@ -1,7 +1,6 @@
 package com.babieta.base;
 
 public class ApiUrl {
-	public static String POST_LIST = "http://meizhoubiji.sinaapp.com";
 
 	// APIÎÄµµ £º http://docs.babeltower.apiary.io/
 	public static String BABIETA_BASE_URL = "http://218.192.166.167:3030/";

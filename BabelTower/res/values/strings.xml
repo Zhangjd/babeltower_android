@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Babel Tower</string>
-    <string name="babeltower_version_name">v0.2.0</string>
+    <string name="babeltower_version_name">v0.3.0</string>
     <string name="webview_bottombar_pageview">Pageview </string>
     <string name="webview_bottombar_like">Like </string>
     <string name="webview_bottombar_initial_count">0</string>

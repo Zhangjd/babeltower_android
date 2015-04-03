@@ -48,7 +48,7 @@
         android:layout_marginBottom="20dp"
         android:gravity="center"
         android:text="@string/about_babieta_license"
-        android:textColor="#006ab4" />
+        android:textColor="#44BC49" />
 
     <TextView
         android:id="@+id/about_copyright"

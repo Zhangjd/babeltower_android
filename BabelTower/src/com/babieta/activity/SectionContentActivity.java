@@ -5,28 +5,30 @@ import java.util.LinkedList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.avos.avoscloud.LogUtil.log;
-import com.babieta.R;
-import com.babieta.adapter.ListPostAdapter;
-import com.babieta.base.Netroid;
-import com.babieta.bean.PostBean;
-import com.duowan.mobile.netroid.Listener;
-import com.duowan.mobile.netroid.NetroidError;
-import com.duowan.mobile.netroid.request.JsonObjectRequest;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.avos.avoscloud.LogUtil.log;
+import com.babieta.R;
+import com.babieta.adapter.ListPostAdapter;
+import com.babieta.base.Netroid;
+import com.babieta.base.Util;
+import com.babieta.bean.PostBean;
+import com.duowan.mobile.netroid.Listener;
+import com.duowan.mobile.netroid.NetroidError;
+import com.duowan.mobile.netroid.request.JsonObjectRequest;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 // 点开"分类"的Activity
 public class SectionContentActivity extends SwipeBackActivity {
@@ -37,10 +39,8 @@ public class SectionContentActivity extends SwipeBackActivity {
 	// private String category;
 	private String module;
 
-	private ListView listView;
+	private PullToRefreshListView listView;
 	private ListPostAdapter listPostAdapter;
-	private LinkedList<PostBean> postBeans;
-
 	private ImageButton backButton;
 
 	@Override
@@ -83,6 +83,11 @@ public class SectionContentActivity extends SwipeBackActivity {
 								String jsonString = response.toString();
 								LinkedList<PostBean> postBeans = PostBean.parseSection(jsonString,
 										SectionContentActivity.this); // 在这里解析
+								if (postBeans.size() == 0)
+									Util.showToast(SectionContentActivity.this, "没有新的内容");
+								else
+									Util.showToast(SectionContentActivity.this,
+											"加载了" + postBeans.size() + "条内容");
 								listPostAdapter.appendPost(postBeans);
 								listPostAdapter.sortPost();
 								listPostAdapter.notifyDataSetChanged();
@@ -130,117 +135,70 @@ public class SectionContentActivity extends SwipeBackActivity {
 	}
 
 	public void initPostListView() {
-		listView = (ListView) findViewById(R.id.section_content_list_view);
+		listView = (PullToRefreshListView) findViewById(R.id.section_content_list_view);
+		listView.setMode(Mode.PULL_FROM_END);
 		listPostAdapter = new ListPostAdapter(this);
 		listView.setAdapter(listPostAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			// 点击item跳转到WebView中
-			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
-				postBeans = listPostAdapter.postBeans;
-				final int pos_final = pos;
-
-				if (postBeans.get(pos).getContentType().equals("article")) {
-					Toast.makeText(getApplicationContext(), "文章类型", Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(SectionContentActivity.this, WebViewActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putInt("id", postBeans.get(pos).getId());
-					bundle.putCharSequence("content_type", postBeans.get(pos).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos).getTitle());
-					bundle.putCharSequence("description", postBeans.get(pos).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos).getImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos).getAuthor());
-					bundle.putCharSequence("created_at", postBeans.get(pos).getCreatedAt());
-					bundle.putCharSequence("updated_at", postBeans.get(pos).getUpdatedAt());
-					intent.putExtras(bundle);
-					startActivity(intent);
-					overridePendingTransition(R.anim.base_slide_right_in, R.anim.base_slide_remain);
-				} else if (postBeans.get(pos).getContentType().equals("album")) {
-					Toast.makeText(getApplicationContext(), "相册类型", Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(SectionContentActivity.this,
-							AlbumWebViewActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putInt("id", postBeans.get(pos).getId());
-					bundle.putCharSequence("content_type", postBeans.get(pos).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos).getTitle());
-					bundle.putCharSequence("description", postBeans.get(pos).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos).getImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos).getAuthor());
-					bundle.putCharSequence("created_at", postBeans.get(pos).getCreatedAt());
-					bundle.putCharSequence("updated_at", postBeans.get(pos).getUpdatedAt());
-					intent.putExtras(bundle);
-					startActivity(intent);
-					overridePendingTransition(R.anim.base_slide_right_in, R.anim.base_slide_remain);
-				} else if (postBeans.get(pos).getContentType().equals("video")) {
-					ContextThemeWrapper themedContext = new ContextThemeWrapper(
-							SectionContentActivity.this,
-							android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
-					AlertDialog.Builder builder = new AlertDialog.Builder(themedContext);
-					AlertDialog alertDialog = builder.create();
-					alertDialog.setMessage("我是一个视频,建议在wifi条件下开我哦");
-					alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "好的嘛", // 反人类的安卓设定,确定键在右边
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-									Intent intent = new Intent(SectionContentActivity.this,
-											VideoActivity.class);
-									Bundle bundle = new Bundle();
-									bundle.putInt("id", postBeans.get(pos_final).getId());
-									bundle.putCharSequence("content_type", postBeans.get(pos_final)
-											.getContentType());
-									bundle.putCharSequence("itemURL", postBeans.get(pos_final)
-											.getItemURL());
-									bundle.putCharSequence("title", postBeans.get(pos_final)
-											.getTitle());
-									bundle.putCharSequence("description", postBeans.get(pos_final)
-											.getDescription());
-									bundle.putCharSequence("ImageURL", postBeans.get(pos_final)
-											.getImageUrl());
-									bundle.putCharSequence("author", postBeans.get(pos_final)
-											.getAuthor());
-									bundle.putCharSequence("created_at", postBeans.get(pos_final)
-											.getCreatedAt());
-									bundle.putCharSequence("updated_at", postBeans.get(pos_final)
-											.getUpdatedAt());
-									intent.putExtras(bundle);
-									startActivity(intent);
-									overridePendingTransition(R.anim.base_slide_right_in,
-											R.anim.base_slide_remain);
-								}
-							});
-					alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "再等等",
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-								}
-							});
-					alertDialog.show();
-				} else if (postBeans.get(pos).getContentType().equals("special")) {
-					Toast.makeText(getApplicationContext(), "专题类型", Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(SectionContentActivity.this, SpecialActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putInt("id", postBeans.get(pos).getId());
-					bundle.putCharSequence("content_type", postBeans.get(pos).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos).getTitle());
-					bundle.putCharSequence("description", postBeans.get(pos).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos).getImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos).getAuthor());
-					bundle.putCharSequence("created_at", postBeans.get(pos).getCreatedAt());
-					bundle.putCharSequence("updated_at", postBeans.get(pos).getUpdatedAt());
-					intent.putExtras(bundle);
-					startActivity(intent);
-					overridePendingTransition(R.anim.base_slide_right_in, R.anim.base_slide_remain);
-				} else {
-					Toast.makeText(getApplicationContext(), "未知类型", Toast.LENGTH_SHORT).show();
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if (position >= 1 && listPostAdapter.getCount() >= (position - 1)) {
+					PostBean postBean = listPostAdapter.postBeans.get(position - 1);
+					Util.handleItemClick(SectionContentActivity.this, postBean);
 				}
+			}
+		});
 
+		listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				int size = listPostAdapter.getCount();
+				if (size == 0)
+					return;
+				else {
+					PostBean bean = (PostBean) listPostAdapter.getItem(size - 1);
+					int tailID = bean.getId();
+					String targetURL = itemURL + "?max_id=" + (tailID - 1);
+					JSONObject jsonRequest = null;
+					JsonObjectRequest request = new JsonObjectRequest(targetURL, jsonRequest,
+							new Listener<JSONObject>() {
+								@Override
+								public void onSuccess(JSONObject response) {
+									try {
+										if (response.has("status")
+												&& response.getInt("status") == 0) {
+											String jsonString = response.toString();
+											LinkedList<PostBean> postBeans = PostBean.parseSection(
+													jsonString, SectionContentActivity.this); // 在这里解析
+											if (postBeans.size() == 0)
+												Util.showToast(SectionContentActivity.this,
+														"没有新的内容");
+											else
+												Util.showToast(SectionContentActivity.this, "加载了"
+														+ postBeans.size() + "条内容");
+											listPostAdapter.appendPost(postBeans);
+											listPostAdapter.sortPost();
+											listPostAdapter.notifyDataSetChanged();
+											listView.onRefreshComplete();
+										} else {
+										}
+									} catch (JSONException e) {
+										e.printStackTrace();
+									}
+								}
+
+								@Override
+								public void onError(NetroidError error) {
+									String data = error.getMessage();
+									log.d("onError", data);
+								}
+							});
+					// 设置请求标识，这个标识可用于终止该请求时传入的Key
+					request.setTag(REQUESTS_TAG);
+					Netroid.addRequest(request);
+				}
 			}
 		});
 	}

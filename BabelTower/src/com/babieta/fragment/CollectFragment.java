@@ -3,15 +3,14 @@ package com.babieta.fragment;
 import java.util.LinkedList;
 
 import com.babieta.R;
-import com.babieta.activity.AlbumWebViewActivity;
-import com.babieta.activity.WebViewActivity;
 import com.babieta.adapter.ListPostAdapter;
+import com.babieta.base.Util;
 import com.babieta.bean.PostBean;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 
+import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -20,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class CollectFragment extends Fragment {
@@ -74,50 +72,11 @@ public class CollectFragment extends Fragment {
 			@Override
 			// 点击item跳转到WebView中
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-				// 取出item的URL , position起始位置1 (前面有个TextView)
-				LinkedList<PostBean> postBeans = listPostAdapter.postBeans;
-				String itemContentType = postBeans.get(pos - 1).getContentType();
-
-				if (itemContentType.equals("article")) {
-					Toast.makeText(getActivity(), "文章类型", Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(getActivity(), WebViewActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putInt("id", postBeans.get(pos - 1).getId());
-					bundle.putCharSequence("content_type", postBeans.get(pos - 1).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos - 1).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 1).getTitle());
-					bundle.putCharSequence("description", postBeans.get(pos - 1).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos - 1).getHeaderImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos - 1).getAuthor());
-					bundle.putCharSequence("created_at", postBeans.get(pos - 1).getCreatedAt());
-					bundle.putCharSequence("updated_at", postBeans.get(pos - 1).getUpdatedAt());
-					intent.putExtras(bundle);
-					startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.base_slide_right_in,
-							R.anim.base_slide_remain);
-				} else if (itemContentType.equals("album")) {
-					Toast.makeText(getActivity(), "相册类型", Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(getActivity(), AlbumWebViewActivity.class);
-					Bundle bundle = new Bundle();
-					bundle.putInt("id", postBeans.get(pos - 1).getId());
-					bundle.putCharSequence("content_type", postBeans.get(pos - 1).getContentType());
-					bundle.putCharSequence("itemURL", postBeans.get(pos - 1).getItemURL());
-					bundle.putCharSequence("title", postBeans.get(pos - 1).getTitle());
-					bundle.putCharSequence("description", postBeans.get(pos - 1).getDescription());
-					bundle.putCharSequence("ImageURL", postBeans.get(pos - 1).getHeaderImageUrl());
-					bundle.putCharSequence("author", postBeans.get(pos - 1).getAuthor());
-					bundle.putCharSequence("created_at", postBeans.get(pos - 1).getCreatedAt());
-					bundle.putCharSequence("updated_at", postBeans.get(pos - 1).getUpdatedAt());
-					intent.putExtras(bundle);
-					startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.base_slide_right_in,
-							R.anim.base_slide_remain);
-				} else {
-
-				}
+				PostBean postBean = listPostAdapter.postBeans.get(pos - 1);
+				Activity activity = getActivity();
+				Util.handleItemClick(activity, postBean);
 			}
 		});
 	}
+
 }

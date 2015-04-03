@@ -2,16 +2,21 @@ package com.babieta.activity;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
 import com.babieta.base.Netroid;
 import com.babieta.base.S;
+import com.babieta.base.Util;
 import com.duowan.mobile.netroid.AuthFailureError;
 import com.duowan.mobile.netroid.Listener;
 import com.duowan.mobile.netroid.NetroidError;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
 import com.duowan.mobile.netroid.request.StringRequest;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -25,7 +30,6 @@ import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class WebViewActivity extends SwipeBackActivity {
@@ -35,7 +39,7 @@ public class WebViewActivity extends SwipeBackActivity {
 	private ImageButton likeButton;
 	private TextView likeTextView;
 	private ImageButton collectButton;
-	private TextView colletTextView;
+	private TextView pageviewTextView;
 	private ImageButton backButton;
 	private ProgressDialog mProgressDialog;
 
@@ -124,7 +128,7 @@ public class WebViewActivity extends SwipeBackActivity {
 							titleTextView.setText(title);
 
 							likeTextView.setText(String.valueOf(like));
-							colletTextView.setText(String.valueOf(views));
+							pageviewTextView.setText(String.valueOf(views));
 
 							if (content_type.equals("article")) { // 文章类型
 								body_data = response.getString("template_html");
@@ -133,7 +137,7 @@ public class WebViewActivity extends SwipeBackActivity {
 							} else {
 							}
 						} catch (JSONException e) {
-							System.out.println("error in parsing JSON : body_html");
+							log.w("error in parsing JSON : body_html");
 							e.printStackTrace();
 						}
 					}
@@ -178,7 +182,7 @@ public class WebViewActivity extends SwipeBackActivity {
 		this.likeButton = (ImageButton) findViewById(R.id.bottombar_like);
 		this.likeTextView = (TextView) findViewById(R.id.bottombar_like_counter);
 		this.collectButton = (ImageButton) findViewById(R.id.bottombar_collect);
-		this.colletTextView = (TextView) findViewById(R.id.bottombar_pageview_counter);
+		this.pageviewTextView = (TextView) findViewById(R.id.bottombar_pageview_counter);
 		this.backButton = (ImageButton) findViewById(R.id.back_button);
 
 		// find collections
@@ -239,7 +243,7 @@ public class WebViewActivity extends SwipeBackActivity {
 		Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
 			@Override
 			public void onSuccess(String arg0) {
-				System.out.println(arg0);
+				log.d(arg0);
 			}
 		}));
 
@@ -249,7 +253,7 @@ public class WebViewActivity extends SwipeBackActivity {
 		likeTextView.setText(String.valueOf(++cnt));
 		likeButton.setImageResource(R.drawable.message_vote);
 		S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
-		Toast.makeText(WebViewActivity.this, "Nice!", Toast.LENGTH_SHORT).show(); // Toast
+		Util.showToast(WebViewActivity.this, "Nice!");
 	}
 
 	public class PutRequest extends StringRequest {
@@ -284,14 +288,12 @@ public class WebViewActivity extends SwipeBackActivity {
 			}
 			S.put(getApplicationContext(), "collected_list", tmp_all);
 
-			System.out.println("tmp_all : " + tmp_all);
-
 			if (status) {
 				collectFlag = 0;
 				collectButton.setImageResource(R.drawable.news_collect);
-				Toast.makeText(WebViewActivity.this, "已取消收藏", Toast.LENGTH_SHORT).show();
+				Util.showToast(WebViewActivity.this, "已取消收藏");
 			} else {
-				System.out.println("取消收藏失败");
+				log.w("取消收藏失败");
 			}
 		} else { // 收藏
 			Boolean status = S.addStringSet(getApplicationContext(), "collected_list",
@@ -315,9 +317,9 @@ public class WebViewActivity extends SwipeBackActivity {
 				S.addStringSet(getApplicationContext(), "collected_list", created_at);
 				S.addStringSet(getApplicationContext(), "collected_list", updated_at);
 
-				Toast.makeText(WebViewActivity.this, "已收藏", Toast.LENGTH_SHORT).show();
+				Util.showToast(WebViewActivity.this, "已收藏");
 			} else {
-				System.out.println("收藏失败");
+				log.w("收藏失败");
 			}
 		}
 	}

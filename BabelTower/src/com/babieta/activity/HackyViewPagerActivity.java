@@ -17,7 +17,9 @@ import org.json.JSONObject;
 import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
 import com.babieta.adapter.ImageAdapter;
+import com.babieta.base.Util;
 import com.babieta.layout.HackyViewPager;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -33,7 +35,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 public class HackyViewPagerActivity extends Activity {
 
@@ -214,7 +215,7 @@ public class HackyViewPagerActivity extends Activity {
 		protected void onPostExecute(Integer result) {
 			super.onPostExecute(result);
 			if (!resultStr.isEmpty()) {
-				Toast.makeText(context, "照片已保存在" + resultStr, Toast.LENGTH_SHORT).show();
+				Util.showToast(context, "照片已保存在" + resultStr);
 			} else {
 
 			}

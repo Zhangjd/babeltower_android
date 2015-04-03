@@ -9,10 +9,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
 import com.babieta.activity.SectionContentActivity;
 import com.babieta.base.ApiUrl;
 import com.babieta.base.Netroid;
+import com.babieta.base.Util;
 import com.duowan.mobile.netroid.Listener;
 import com.duowan.mobile.netroid.NetroidError;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
@@ -38,12 +40,11 @@ public class SectionFragment extends Fragment {
 	private final String REQUESTS_TAG = "section_request";
 	private ArrayList<HashMap<String, Object>> sectionList = new ArrayList<HashMap<String, Object>>();
 	private View view;
-	
+
 	private static JSONArray sections = null;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		view = inflater.inflate(R.layout.fragment_section, container, false);
 		this.initSection();
 		return view;
@@ -51,7 +52,6 @@ public class SectionFragment extends Fragment {
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 
 		TextView titleTextView = (TextView) getActivity().findViewById(R.id.header_textview);
@@ -60,8 +60,8 @@ public class SectionFragment extends Fragment {
 
 	private void initSection() {
 		JSONObject jsonRequest = null;
-		
-		if(sections!=null){
+
+		if (sections != null) {
 			for (int i = 0; i < sections.length(); i++) {
 				JSONObject mJsonObject;
 				try {
@@ -93,7 +93,7 @@ public class SectionFragment extends Fragment {
 			}
 			return;
 		}
-		
+
 		JsonObjectRequest request = new JsonObjectRequest(ApiUrl.BABIETA_BASE_URL
 				+ ApiUrl.BABIETA_SECTION_LIST, jsonRequest, new Listener<JSONObject>() {
 			@Override
@@ -131,7 +131,6 @@ public class SectionFragment extends Fragment {
 					} else {
 					}
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					System.out.println("error in parsing JSON : body_html");
 					e.printStackTrace();
 				}
@@ -140,7 +139,8 @@ public class SectionFragment extends Fragment {
 			@Override
 			public void onError(NetroidError error) {
 				String data = error.getMessage();
-				System.out.println("error occurred : " + data);
+				log.w(data);
+				Util.showToast(getActivity(), "读取失败,请检查网络或稍后再试");
 			}
 
 			@Override
@@ -154,9 +154,7 @@ public class SectionFragment extends Fragment {
 
 					@Override
 					public void onCancel(DialogInterface dialog) {
-						// TODO Auto-generated method stub
 						Netroid.getRequestQueue().cancelAll(REQUESTS_TAG);
-
 					}
 				});
 				mProgressDialog.show();
@@ -194,7 +192,6 @@ public class SectionFragment extends Fragment {
 		// @Override
 		// public boolean setViewValue(View view, Object data, String
 		// textRepresentation) {
-		// // TODO Auto-generated method stub
 		// if (view instanceof ImageView && data instanceof Bitmap) {
 		// ImageView i = (ImageView) view;
 		// i.setImageBitmap((Bitmap) data);
@@ -217,9 +214,6 @@ public class SectionFragment extends Fragment {
 				String itemURL = ApiUrl.BABIETA_BASE_URL
 						+ ApiUrl.BABIETA_SECTION_CONTENTS.replace("{id}", itemId);
 
-				// Toast.makeText(getActivity(), "url：" + itemURL,
-				// Toast.LENGTH_SHORT).show();
-
 				// 接下来,跳转到SectionContentActivity
 				Intent intent = new Intent(getActivity(), SectionContentActivity.class);
 				Bundle bundle = new Bundle();
@@ -235,28 +229,24 @@ public class SectionFragment extends Fragment {
 	}
 
 	private class MySectionListAdapter extends SimpleAdapter {
+		@SuppressWarnings("unused")
 		private Context context;
+		@SuppressWarnings("unused")
+		private ArrayList<HashMap<String, Object>> sectionList;
 
+		@SuppressWarnings("unchecked")
 		public MySectionListAdapter(Context context, List<? extends Map<String, ?>> data,
 				int resource, String[] from, int[] to) {
 			super(context, data, resource, from, to);
 			this.context = context;
-			// TODO Auto-generated constructor stub
+			this.sectionList = (ArrayList<HashMap<String, Object>>) data;
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
-			convertView = LayoutInflater.from(context).inflate(R.layout.fragment_section_griditem,
-					null);
-			convertView.setPadding(0, dip2px(context, 10), 0, dip2px(context, 20));
-
 			return super.getView(position, convertView, parent);
 		}
 
-		private int dip2px(Context context, float dpValue) {
-			final float scale = context.getResources().getDisplayMetrics().density;
-			return (int) (dpValue * scale + 0.5f);
-		}
 	}
 }

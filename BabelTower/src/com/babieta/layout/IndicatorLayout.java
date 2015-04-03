@@ -1,6 +1,8 @@
 package com.babieta.layout;
 
 import com.babieta.R;
+import com.babieta.activity.MainActivity;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
@@ -22,11 +24,20 @@ public class IndicatorLayout extends LinearLayout implements OnPageChangeListene
 
 	public void setViewPage(ViewPager viewPager) {
 		count = viewPager.getAdapter().getCount();
+		if (count == 0)
+			return;
+		if (this.getChildCount() >= count){
+			for (int index = count; index < this.getChildCount(); index++) {
+				this.removeViewAt(index);
+			}
+			return;
+		}
 		for (int i = 0; i < count; i++) {
 			View view = LayoutInflater.from(context).inflate(R.layout.indicate_image, null);
 			this.addView(view);
 		}
-		this.getChildAt(0).setSelected(true);
+		// this.getChildAt(0).setSelected(true);
+		this.getChildAt(viewPager.getCurrentItem()).setSelected(true);
 		viewPager.setOnPageChangeListener(this);
 	}
 
@@ -49,6 +60,7 @@ public class IndicatorLayout extends LinearLayout implements OnPageChangeListene
 				this.getChildAt(i).setSelected(false);
 			}
 		}
-
+		MainActivity.mainFragment.stopViewPagerTask();
+		MainActivity.mainFragment.startViewPagerTask();
 	}
 }

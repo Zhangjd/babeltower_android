@@ -1,30 +1,31 @@
 package com.babieta.activity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.avos.avoscloud.LogUtil.log;
 import com.babieta.R;
+import com.babieta.adapter.ListPostAdapter;
 import com.babieta.base.ApiUrl;
 import com.babieta.base.Netroid;
+import com.babieta.base.S;
 import com.babieta.base.Util;
+import com.babieta.bean.PostBean;
+import com.duowan.mobile.netroid.AuthFailureError;
 import com.duowan.mobile.netroid.Listener;
 import com.duowan.mobile.netroid.NetroidError;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
+import com.duowan.mobile.netroid.request.StringRequest;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,27 +35,42 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 //专题activity
 public class SpecialActivity extends SwipeBackActivity {
 
+	private String contentsURL = "";
 	private String subContentsURL = "";
 
 	private ImageView special_header_image;
 	private TextView special_title;
 	private TextView special_description;
 	private ProgressDialog mProgressDialog;
+	private ImageButton likeButton;
+	private TextView likeTextView;
+	private ImageButton collectButton;
+	private TextView pageviewTextView;
+	private ImageButton backButton;
 
 	private String id = "";
 	private String itemURL = "";
-	private String headerImageURL = "";
+	private String imgURL = "";
 	private String title = "";
+	private String content_type = "";
+	private String author = "";
+	private String created_at = "";
+	private String updated_at = "";
 	private String description = "";
 
+	private int like = 0;
+	private int views = 0;
+	private int collectFlag = 0;
+	private boolean likeFlag = false;
+
 	private ListView listView = null;
-	private List<Map<String, String>> data = new ArrayList<Map<String, String>>();
+	private ListPostAdapter listPostAdapter;
+	private LinkedList<PostBean> postBeans;
 
 	private final String REQUESTS_TAG = "special_request";
 
@@ -66,23 +82,26 @@ public class SpecialActivity extends SwipeBackActivity {
 		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
 		titleTextView.setText("专题视图");
 
-		this.initEventsRegister();
-
 		// get data from bundle
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
 		id = String.valueOf(bundle.getInt("id", 0));
-		itemURL = bundle.getString("itemURL");
-		title = bundle.getString("title");
-		description = bundle.getString("description");
-		headerImageURL = bundle.getString("ImageURL");
+		content_type = bundle.getString("content_type", " ");
+		itemURL = bundle.getString("itemURL", " ");
+		imgURL = bundle.getString("ImageURL", " ");
+		author = bundle.getString("author", " ");
+		created_at = bundle.getString("created_at", " ");
+		updated_at = bundle.getString("updated_at", " ");
+		title = bundle.getString("title", " ");
+		description = bundle.getString("description", " ");
+
+		this.initEventsRegister();
+		this.initEventsRegister2();
 
 		// 修正Id
 		if (id.equals("0")) {
 			id = itemURL.replace(ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_ARTICLE, "");
 		}
-
-		subContentsURL = ApiUrl.BABIETA_BASE_URL + "/v1/contents/" + id + "/subcontents";
 
 		special_title = (TextView) findViewById(R.id.special_title);
 		special_description = (TextView) findViewById(R.id.special_description);
@@ -94,29 +113,19 @@ public class SpecialActivity extends SwipeBackActivity {
 		listView = (ListView) findViewById(R.id.special_subcontents_listview);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Intent intent = new Intent(SpecialActivity.this, WebViewActivity.class);
-				Bundle bundle = new Bundle();
-				bundle.putInt("id", Integer.valueOf(data.get(arg2).get("id")));
-				bundle.putCharSequence("content_type", data.get(arg2).get("content_type"));
-				bundle.putCharSequence("itemURL", ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_ARTICLE
-						+ data.get(arg2).get("id"));
-				bundle.putCharSequence("title", data.get(arg2).get("title"));
-				bundle.putCharSequence("description", data.get(arg2).get("description"));
-				bundle.putCharSequence("ImageURL", data.get(arg2).get("ImageURL"));
-				bundle.putCharSequence("author", data.get(arg2).get("author"));
-				bundle.putCharSequence("created_at", data.get(arg2).get("created_at"));
-				bundle.putCharSequence("updated_at", data.get(arg2).get("updated_at"));
-				intent.putExtras(bundle);
-				startActivity(intent);
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				PostBean postBean = listPostAdapter.postBeans.get(position);
+				Util.handleItemClick(SpecialActivity.this, postBean);
 			}
 		});
 
+		loadContents();
 		loadSubContents();
 		loadHeaderImage();
 	}
 
 	private void loadSubContents() {
+		subContentsURL = ApiUrl.BABIETA_BASE_URL + "/v1/contents/" + id + "/subcontents";
 		JSONObject jsonRequest = null;
 		JsonObjectRequest request = new JsonObjectRequest(subContentsURL, jsonRequest,
 				new Listener<JSONObject>() {
@@ -147,33 +156,11 @@ public class SpecialActivity extends SwipeBackActivity {
 
 					@Override
 					public void onSuccess(JSONObject response) {
-						// System.out.println(response.toString());
 						try {
 							if (response.has("status") && response.getInt("status") == 0) {
-								JSONArray jsonArray = (JSONArray) response.get("list");
-								for (int i = jsonArray.length() - 1; i >= 0; i--) {
-									Map<String, String> map = new HashMap<String, String>();
-									JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-									String subTitle = jsonObject.getString("title");
-									String subImage = jsonObject.getString("thumb_image_url");
-									String subAuthor = jsonObject.getJSONObject("author")
-											.getString("display_name");
-									String subUpdated_at = jsonObject.getString("updated_at");
-									String subCreated_at = jsonObject.getString("created_at");
-									String subId = String.valueOf(jsonObject.getInt("id"));
-
-									map.put("id", subId);
-									map.put("content_type", jsonObject.getString("content_type"));
-									map.put("title", subTitle);
-									map.put("description", jsonObject.getString("description"));
-									map.put("ImageURL", subImage);
-									map.put("author", subAuthor);
-									map.put("created_at", subCreated_at);
-									map.put("updated_at", subUpdated_at);
-
-									data.add(map);
-								}
-								changeListView();
+								String result = response.toString();
+								postBeans = PostBean.parseSection(result, SpecialActivity.this);
+								changeListView(postBeans);
 							} else {
 							}
 						} catch (JSONException e) {
@@ -193,23 +180,57 @@ public class SpecialActivity extends SwipeBackActivity {
 		Netroid.addRequest(request);
 	}
 
+	private void loadContents() {
+		contentsURL = ApiUrl.BABIETA_BASE_URL + "/v1/contents/" + id;
+		JSONObject jsonRequest = null;
+		JsonObjectRequest request = new JsonObjectRequest(contentsURL, jsonRequest,
+				new Listener<JSONObject>() {
+					@Override
+					public void onSuccess(JSONObject response) {
+						try {
+							if (response.has("status")) { // 有status:出错
+
+							} else {
+								views = response.getInt("views");
+								like = response.getInt("like");
+								likeTextView.setText(String.valueOf(like));
+								pageviewTextView.setText(String.valueOf(views));
+							}
+						} catch (JSONException e) {
+							log.e("JSONException", "解析子内容出错了!");
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					public void onError(NetroidError error) {
+						String data = error.getMessage();
+						log.e("onError.getMessage", data);
+					}
+				});
+		// 设置请求标识，这个标识可用于终止该请求时传入的Key
+		request.setTag("special_request2");
+		Netroid.addRequest(request);
+	}
+
 	private void loadHeaderImage() {
-		if (headerImageURL != "") {
-			log.w(headerImageURL);
-			ImageLoader.getInstance().displayImage(headerImageURL, special_header_image,
+		if (imgURL != "") {
+			ImageLoader.getInstance().displayImage(imgURL, special_header_image,
 					Util.getImageOption(getApplicationContext()));
 		}
 	}
 
-	// 子标题ListView
-	private void changeListView() {
+	// 构建SubContent的ListView
+	private void changeListView(LinkedList<PostBean> postBeans) {
+		listPostAdapter = new ListPostAdapter(SpecialActivity.this);
+		listPostAdapter.postBeans = postBeans;
 
-		listView.setAdapter(new mySimpleAdater(this, data, android.R.layout.simple_list_item_1,
-				new String[] { "title" }, new int[] { android.R.id.text1 }));
+		listView.setAdapter(listPostAdapter);
+		listPostAdapter.notifyDataSetChanged();
 		setListViewHeightBasedOnChildren(listView);
 	}
 
-	private void initEventsRegister() {
+	private void initEventsRegister2() {
 		final ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
 
 		backButton.setOnClickListener(new View.OnClickListener() {
@@ -245,22 +266,149 @@ public class SpecialActivity extends SwipeBackActivity {
 		listView.setLayoutParams(params);
 	}
 
-	// 重写mySimpleAdater的getView
-	private class mySimpleAdater extends SimpleAdapter {
+	private void initEventsRegister() {
+		this.likeButton = (ImageButton) findViewById(R.id.bottombar_like);
+		this.likeTextView = (TextView) findViewById(R.id.bottombar_like_counter);
+		this.collectButton = (ImageButton) findViewById(R.id.bottombar_collect);
+		this.pageviewTextView = (TextView) findViewById(R.id.bottombar_pageview_counter);
+		this.backButton = (ImageButton) findViewById(R.id.back_button);
 
-		public mySimpleAdater(Context context, List<? extends Map<String, ?>> data, int resource,
-				String[] from, int[] to) {
-			super(context, data, resource, from, to);
+		// find collections
+		String[] strings = S.getStringSet(getApplicationContext(), "collected_list");
+		for (int i = 0; i < strings.length; i++) {
+			if (itemURL.equals(strings[i])) {
+				collectFlag = 1;
+				collectButton.setImageResource(R.drawable.news_collected);
+				break;
+			}
+		}
+
+		// find liked
+		String[] likeSet = S.getStringSet(getApplicationContext(), "liked_list");
+		for (int i = 1; i < likeSet.length; i++) {
+			if (itemURL.equals(likeSet[i])) {
+				likeFlag = true;
+				likeButton.setImageResource(R.drawable.message_vote);
+				break;
+			}
+		}
+
+		likeButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				handleLike();
+			}
+		});
+
+		collectButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				handleCollect();
+			}
+		});
+
+		backButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				finish();
+				overridePendingTransition(0, R.anim.base_slide_right_out);
+			}
+		});
+	}
+
+	// 处理点赞
+	private void handleLike() {
+		if (likeFlag)
+			return;
+
+		String url = "http://218.192.166.167:3030/v1/contents/" + id + "/like";
+
+		Map<String, String> mParams = new HashMap<String, String>();
+		Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
+			@Override
+			public void onSuccess(String arg0) {
+				log.d(arg0);
+			}
+		}));
+
+		// 点赞 +1
+		likeFlag = true;
+		int cnt = Integer.valueOf(likeTextView.getText().toString());
+		likeTextView.setText(String.valueOf(++cnt));
+		likeButton.setImageResource(R.drawable.message_vote);
+		S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
+		Util.showToast(SpecialActivity.this, "Nice!");
+	}
+
+	public class PutRequest extends StringRequest {
+		private Map<String, String> mParams;
+
+		// 传入Post参数的Map集合
+		public PutRequest(String url, Map<String, String> params, Listener<String> listener) {
+			super(Method.PUT, url, listener);
+			mParams = params;
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View v = super.getView(position, convertView, parent);
-			TextView textView = (TextView) v.findViewById(android.R.id.text1);
-			textView.setTextColor(Color.rgb(48, 48, 48));
-			return v;
+		public Map<String, String> getParams() throws AuthFailureError {
+			return mParams;
 		}
+	}
 
+	// 处理收藏
+	private void handleCollect() {
+		if (collectFlag == 1) { // 取消收藏
+			String[] collectSet = S.getStringSet(getApplicationContext(), "collected_list");
+			String regularEx = S.regularEx;
+			Boolean status = false;
+			String tmp_all = "";
+			for (int i = 1; i < collectSet.length; i++) {
+				if ((i + 1) < collectSet.length && collectSet[i + 1].equals(itemURL)) {
+					status = true;
+					i = i + 8; // 算上i++,跳过9个
+					continue;
+				}
+				tmp_all = tmp_all + regularEx + collectSet[i];
+			}
+			S.put(getApplicationContext(), "collected_list", tmp_all);
+
+			if (status) {
+				collectFlag = 0;
+				collectButton.setImageResource(R.drawable.news_collect);
+				Util.showToast(SpecialActivity.this, "已取消收藏");
+			} else {
+				log.w("取消收藏失败");
+			}
+		} else { // 收藏
+			Boolean status = S.addStringSet(getApplicationContext(), "collected_list",
+					String.valueOf(id));
+
+			if (status) {
+				collectFlag = 1;
+				collectButton.setImageResource(R.drawable.news_collected);
+
+				TextView collectCnt = (TextView) findViewById(R.id.bottombar_pageview_counter);
+				int cnt = Integer.valueOf((String) collectCnt.getText());
+				collectCnt.setText(String.valueOf(++cnt));
+
+				// 处理缓存
+				S.addStringSet(getApplicationContext(), "collected_list", itemURL);
+				S.addStringSet(getApplicationContext(), "collected_list", content_type);
+				S.addStringSet(getApplicationContext(), "collected_list", imgURL);
+				S.addStringSet(getApplicationContext(), "collected_list", title);
+				S.addStringSet(getApplicationContext(), "collected_list", description);
+				S.addStringSet(getApplicationContext(), "collected_list", author);
+				S.addStringSet(getApplicationContext(), "collected_list", created_at);
+				S.addStringSet(getApplicationContext(), "collected_list", updated_at);
+
+				Util.showToast(SpecialActivity.this, "已收藏");
+			} else {
+				log.w("收藏失败");
+			}
+		}
 	}
 
 }

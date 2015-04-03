@@ -1,64 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#FFFFFF"
-    android:fadingEdge="vertical"
-    android:scrollbars="vertical" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EEEEEE"
+    android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+    <include
+        android:id="@+id/include1"
+        layout="@layout/head_with_back" />
+
+    <ScrollView
+        android:id="@+id/special_contents"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/include1"
+        android:fadingEdge="vertical"
         android:scrollbars="vertical" >
 
-        <include
-            android:id="@+id/include1"
-            layout="@layout/head_with_back" />
-
-        <ImageView
-            android:id="@+id/special_header_image"
-            android:layout_width="fill_parent"
-            android:layout_height="225dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/dark_menu_avatar_bg_mask" />
-
-        <TextView
-            android:id="@+id/special_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="15dp"
-            android:text="special_title"
-            android:textColor="#000000"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/special_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="15dp"
-            android:text="special_description"
-            android:textColor="#969696" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1px"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/background_dark" />
-
-        <ListView
-            android:id="@+id/special_subcontents_listview"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp" >
-        </ListView>
-    </LinearLayout>
+            android:orientation="vertical"
+            android:scrollbars="vertical" >
 
-</ScrollView>
+            <ImageView
+                android:id="@+id/special_header_image"
+                android:layout_width="fill_parent"
+                android:layout_height="225dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/dark_menu_avatar_bg_mask" />
+
+            <TextView
+                android:id="@+id/special_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="15dp"
+                android:textColor="#000000"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/special_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="15dp"
+                android:textColor="#969696" />
+
+            <ListView
+                android:id="@+id/special_subcontents_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </ListView>
+        </LinearLayout>
+    </ScrollView>
+
+    <include
+        android:id="@+id/id_webview_bottombar"
+        layout="@layout/webview_bottombar" />
+
+</RelativeLayout>

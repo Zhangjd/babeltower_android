@@ -15,13 +15,13 @@ import com.avos.avoscloud.feedback.ThreadActivity.ImageCache;
 import com.babieta.R;
 import com.babieta.adapter.FeedbackAdapter;
 import com.babieta.base.S;
+import com.babieta.base.Util;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class FeedbackActivity extends SwipeBackActivity {
 
@@ -85,9 +85,9 @@ public class FeedbackActivity extends SwipeBackActivity {
 					Comment userComment = new Comment(comment);
 					feedbackThread.add(userComment);
 					feedbackThread.sync(syncCallback);
-					Toast.makeText(FeedbackActivity.this, "感谢你的反馈!", Toast.LENGTH_SHORT).show();
+					Util.showToast(FeedbackActivity.this, "感谢你的反馈!");
 				} else {
-					Toast.makeText(FeedbackActivity.this, "请输入反馈内容", Toast.LENGTH_SHORT).show();
+					Util.showToast(FeedbackActivity.this, "请输入反馈内容");
 				}
 			}
 		});

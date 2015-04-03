@@ -258,7 +258,7 @@ public class PostBean {
 		return postBeans;
 	}
 
-	// parse 巴别塔分类内容
+	// parse 巴别塔分类内容 && 专题内容
 	public static LinkedList<PostBean> parseSection(String json, Context c) {
 		JSONTokener jsonTokener = new JSONTokener(json); // JSON解析类
 		LinkedList<PostBean> postBeans = new LinkedList<PostBean>();

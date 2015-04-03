@@ -11,6 +11,7 @@ import com.babieta.adapter.SettingAdapter;
 import com.babieta.base.ApiUrl;
 import com.babieta.base.Netroid;
 import com.babieta.base.S;
+import com.babieta.base.Util;
 import com.duowan.mobile.netroid.Listener;
 import com.duowan.mobile.netroid.NetroidError;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
@@ -31,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
@@ -72,8 +72,7 @@ public class SettingFragment extends Fragment {
 								public void onClick(DialogInterface arg0, int arg1) {
 									S.clear(getActivity()); // 清理SharedPreferences
 									MainActivity.mainFragment.initOnCreate(); // 清空首页ListView
-									Toast.makeText(getActivity(), "清理成功.", Toast.LENGTH_SHORT)
-											.show();
+									Util.showToast(getActivity(), "清理成功");
 								}
 							});
 					alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "取消",
@@ -150,8 +149,7 @@ public class SettingFragment extends Fragment {
 											alertDialog.show();
 										} else {
 											mProgressDialog.hide();
-											Toast.makeText(getActivity(), "当前已经是最新版本",
-													Toast.LENGTH_SHORT).show();
+											Util.showToast(getActivity(), "当前已经是最新版本");
 										}
 
 									} catch (JSONException e) {
@@ -166,8 +164,7 @@ public class SettingFragment extends Fragment {
 								public void onError(NetroidError error) {
 									String data = error.getMessage();
 									Log.d("network error", data);
-									Toast.makeText(getActivity(), "网络错误,请稍后再试.", Toast.LENGTH_SHORT)
-											.show();
+									Util.showToast(getActivity(), "网络错误,请稍后重试");
 								}
 							});
 					// 设置请求标识，这个标识可用于终止该请求时传入的Key
