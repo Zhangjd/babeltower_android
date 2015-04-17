@@ -5,9 +5,12 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="red">#ff0000</color>
-    <color name="green">#00ff00</color>
     <color name="blue">#0000ff</color>
-    <color name="grey">#EEEEEE</color>
+    <color name="grey">#727171</color>
+    <color name="green">#13ae67</color>
     <color name="bbt">#FF44BC49</color>
+    
+    <color name="black2">#1e1e1e</color>
+    <color name="light_grey">#D7D7D7</color>
 
 </resources>

@@ -12,22 +12,20 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:background="#FF44BC49" >
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp" >
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp"
-                android:background="@drawable/menu_avatar" />
+                android:background="@drawable/babeltower_icon" />
         </RelativeLayout>
 
         <fragment
             android:id="@+id/sliging_list"
-            android:name="com.babieta.fragment.SlidingListFragment"
+            android:name="com.bbt.babeltower.fragment.SlidingListFragment"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
     </LinearLayout>

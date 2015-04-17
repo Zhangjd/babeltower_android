@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header_bar"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/babeltower_actionbar_background"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp" >
+
+    <ImageButton
+        android:id="@+id/header_but"
+        android:layout_width="48.9dp"
+        android:layout_height="32.4dp"
+        android:layout_marginRight="10dp"
+        android:background="#00000000"
+        android:scaleType="fitXY"
+        android:src="@drawable/babeltower_menu_toggle" />
+
+    <TextView
+        android:id="@+id/header_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/header_but"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/header_name"
+        android:textColor="@color/grey"
+        android:textSize="18sp" />
+
+</RelativeLayout>

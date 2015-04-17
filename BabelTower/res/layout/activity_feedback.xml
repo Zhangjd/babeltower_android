@@ -3,7 +3,8 @@
     android:id="@+id/activity_about"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF" >
+    android:background="#FFFFFF"
+    android:fitsSystemWindows="true" >
 
     <include
         android:id="@+id/text_include"

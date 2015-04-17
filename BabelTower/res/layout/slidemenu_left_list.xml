@@ -10,13 +10,17 @@
         android:id="@+id/menu_list_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="19dp" />
+        android:layout_margin="19dp"
+        android:visibility="gone" /><!-- 不可见 -->
 
     <TextView
         android:id="@+id/menu_list_text"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="#FF000000"
-        android:textSize="18sp" />
+        android:gravity="center"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:textSize="20sp" />
 
 </LinearLayout>

@@ -4,9 +4,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#00000000"
+    android:fitsSystemWindows="true"
     android:orientation="vertical" >
 
-    <com.babieta.layout.HackyViewPager
+    <com.bbt.babeltower.layout.HackyViewPager
         android:id="@+id/hacky_viewpager"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

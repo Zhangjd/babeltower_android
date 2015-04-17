@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header_bar"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/babeltower_actionbar_background"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp" >
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="41.9dp"
+        android:layout_height="32.4dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/babeltower_back" />
+
+    <TextView
+        android:id="@+id/header_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/back_button"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/header_name"
+        android:textColor="@color/grey"
+        android:textSize="18sp" />
+
+    <ImageButton
+        android:id="@+id/webview_like"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20.3dp"
+        android:layout_toLeftOf="@+id/webview_collect"
+        android:background="#FFFFFF"
+        android:contentDescription="点赞按钮"
+        android:scaleType="fitXY"
+        android:src="@drawable/babeltower_like_off" />
+
+    <ImageButton
+        android:id="@+id/webview_collect"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20.3dp"
+        android:background="#FFFFFF"
+        android:contentDescription="收藏按钮"
+        android:scaleType="fitXY"
+        android:src="@drawable/babeltower_collect_off" />
+
+</RelativeLayout>

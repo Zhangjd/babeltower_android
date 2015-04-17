@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.babieta"
-    android:versionCode="030"
-    android:versionName="0.3.0" > <!-- 升级时请在此修改对应的版本码和版本编号 ,并在strings.xml修改关于界面显示的版本 -->
+    package="com.bbt.babeltower"
+    android:versionCode="040"
+    android:versionName="0.4.0" > <!-- 升级时请在此修改对应的版本码和版本编号 ,并在strings.xml修改关于界面显示的版本 -->
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -17,9 +17,9 @@
     <uses-permission android:name="com.sonymobile.permission.SYSTEM_UI_VISIBILITY_EXTENSIONS" />
 
     <application
-        android:name="com.babieta.base.MyApplication"
+        android:name="com.bbt.babeltower.base.MyApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/babeltower_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <service android:name="com.avos.avoscloud.PushService" />
@@ -32,7 +32,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name="com.babieta.activity.SplashScreen" >
+        <activity android:name="com.bbt.babeltower.activity.SplashScreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,55 +40,55 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.babieta.activity.MainActivity"
+            android:name="com.bbt.babeltower.activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
-        <activity android:name="com.babieta.activity.SwipeBackActivity" >
+        <activity android:name="com.bbt.babeltower.activity.SwipeBackActivity" >
         </activity>
         <activity
-            android:name="com.babieta.activity.WebViewActivity"
+            android:name="com.bbt.babeltower.activity.WebViewActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
         <activity
-            android:name="com.babieta.activity.AlbumWebViewActivity"
+            android:name="com.bbt.babeltower.activity.AlbumWebViewActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
         <activity
-            android:name="com.babieta.activity.HackyViewPagerActivity"
+            android:name="com.bbt.babeltower.activity.HackyViewPagerActivity"
             android:theme="@style/my_actionbar_theme" >
         </activity>
         <activity
-            android:name="com.babieta.activity.AboutActivity"
+            android:name="com.bbt.babeltower.activity.AboutActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
         <activity
-            android:name="com.babieta.activity.FeedbackActivity"
+            android:name="com.bbt.babeltower.activity.FeedbackActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
         <activity
-            android:name="com.babieta.activity.SpecialActivity"
+            android:name="com.bbt.babeltower.activity.SpecialActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
         <activity
             android:name="com.avos.avoscloud.feedback.ThreadActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
-        <activity android:name="com.babieta.activity.PhotoActivity" >
+        <activity android:name="com.bbt.babeltower.activity.PhotoActivity" >
         </activity>
-        <activity android:name="com.babieta.activity.AlbumActivity" >
+        <activity android:name="com.bbt.babeltower.activity.AlbumActivity" >
         </activity>
         <activity
-            android:name="com.babieta.activity.VideoActivity"
+            android:name="com.bbt.babeltower.activity.VideoActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="com.babieta.activity.SectionContentActivity"
+            android:name="com.bbt.babeltower.activity.SectionContentActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
-        <activity android:name="com.babieta.activity.PushCallBackActivity" >
+        <activity android:name="com.bbt.babeltower.activity.PushCallBackActivity" >
         </activity>
     </application>
 

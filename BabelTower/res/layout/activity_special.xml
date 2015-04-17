@@ -3,17 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EEEEEE"
+    android:fitsSystemWindows="true"
     android:orientation="vertical" >
 
     <include
         android:id="@+id/include1"
-        layout="@layout/head_with_back" />
+        layout="@layout/head_webview" />
 
     <ScrollView
         android:id="@+id/special_contents"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/include1"
+        android:layout_marginBottom="50dp"
         android:fadingEdge="vertical"
         android:scrollbars="vertical" >
 
@@ -28,7 +30,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="225dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/dark_menu_avatar_bg_mask" />
+                android:src="@drawable/dark_menu_avatar_bg_mask"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/special_title"

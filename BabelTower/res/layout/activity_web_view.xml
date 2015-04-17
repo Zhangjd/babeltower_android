@@ -1,25 +1,45 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    tools:context="${relativePackage}.${activityClass}" >
+    android:layout_height="match_parent" >
 
-    <include
-        android:id="@+id/text_include"
-        layout="@layout/head_with_back" />
-
-    <WebView
-        android:id="@+id/webview"
+    <RelativeLayout
+        android:id="@+id/webview_relativelayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/text_include"
-        android:layout_marginBottom="50dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp" />
+        android:background="#FFFFFF"
+        android:fitsSystemWindows="true"
+        tools:context="${relativePackage}.${activityClass}" >
 
-    <include
-        android:id="@+id/id_webview_bottombar"
-        layout="@layout/webview_bottombar" />
+        <include
+            android:id="@+id/text_include"
+            layout="@layout/head_webview" />
 
-</RelativeLayout>
+        <com.bbt.babeltower.base.MyWebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/text_include"
+            android:layout_marginBottom="5dp" />
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/float_action_button_up"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_gravity="right|bottom"
+        android:layout_marginBottom="26dp"
+        android:layout_marginRight="21dp"
+        android:background="@drawable/selector_up" />
+
+    <ImageButton
+        android:id="@+id/float_action_button_fullscreen"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_gravity="right|bottom"
+        android:layout_marginBottom="26dp"
+        android:layout_marginRight="21dp"
+        android:background="@drawable/selector_fullscreen"
+        android:visibility="gone" />
+
+</FrameLayout>

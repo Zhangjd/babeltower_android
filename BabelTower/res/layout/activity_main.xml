@@ -3,9 +3,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="#ffffffff"
+    android:fitsSystemWindows="true"
     android:orientation="vertical" >
 
-    <include layout="@layout/head" />
+    <include layout="@layout/head_with_switch" />
 
     <LinearLayout
         android:id="@+id/content_fragment"
