@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_view"
+    android:minHeight="72.0dip" >
+
+    <ImageView
+        android:id="@+id/post_list_image"
+        android:layout_width="fill_parent"
+        android:layout_height="180.0dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="6.0dip"
+        android:layout_marginLeft="18.0dip"
+        android:layout_marginRight="18.0dip"
+        android:layout_marginTop="12.0dip"
+        android:contentDescription="@string/post_list_view_image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/dark_menu_avatar_bg_mask" />
+
+    <TextView
+        android:id="@+id/post_list_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_list_image"
+        android:layout_marginBottom="3.0dip"
+        android:layout_marginLeft="18.0dip"
+        android:layout_marginStart="18.0dip"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textColor="#FF000000"
+        android:textIsSelectable="false"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/post_list_publisher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/post_list_text"
+        android:layout_marginLeft="18.0dip"
+        android:layout_marginStart="18.0dip"
+        android:maxLines="1"
+        android:paddingBottom="12.0dip"
+        android:textColor="#FF000000"
+        android:textSize="11.2sp" />
+
+    <TextView
+        android:id="@+id/post_list_updated_at"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/post_list_text"
+        android:layout_marginEnd="18.0dip"
+        android:layout_marginRight="18.0dip"
+        android:maxLines="1"
+        android:paddingBottom="12.0dip"
+        android:textColor="#FF000000"
+        android:textSize="11.2sp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="18.0dip"
+        android:layout_marginRight="18.0dip"
+        android:background="#000000" />
+
+</RelativeLayout>

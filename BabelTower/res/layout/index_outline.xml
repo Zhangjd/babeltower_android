@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.bbt.babeltower.layout.CarouselViewPager
+        android:id="@+id/vp_main"
+        android:layout_width="fill_parent"
+        android:layout_height="202.5dp" />
+
+    <com.bbt.babeltower.layout.IndicatorLayout
+        android:id="@+id/indicate_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/vp_main"
+        android:background="#51585d"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="2.5dp"
+        android:paddingTop="2.5dp" />
+
+    <TextView
+        android:id="@+id/vp_main_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/vp_main"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/main_news_text"
+        android:textColor="@color/grey"
+        android:textSize="14sp" />
+
+</RelativeLayout>

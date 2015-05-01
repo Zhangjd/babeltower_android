@@ -56,7 +56,7 @@ public class CollectFragment extends Fragment {
 			textView.setText("收藏列表");
 			textView.setVisibility(View.GONE);
 		} else {
-			textView.setText("收藏夹为空,去主页看一看吧~");
+			textView.setText("还没有收藏,去主页看一看吧。");
 			textView.setGravity(Gravity.CENTER);
 			textView.setTextColor(Color.rgb(96, 96, 96));
 		}

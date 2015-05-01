@@ -1,5 +1,6 @@
 package com.bbt.babeltower.activity;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -59,6 +63,9 @@ public class WebViewActivity extends SwipeBackActivity {
 	private boolean likeFlag = false;
 
 	private final String REQUESTS_TAG = "special_request";
+	
+	private CountTimeThread mCountTimeThread;
+	private MyHandler mHandler = new MyHandler(this);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +108,6 @@ public class WebViewActivity extends SwipeBackActivity {
 			}
 
 		};
-		mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY); // 设置滚动条样式
 		mWebView.setWebViewClient(mWebViewClient);
 		mWebView.setOnCustomScroolChangeListener(new MyWebView.ScrollInterface() {
 
@@ -133,7 +139,6 @@ public class WebViewActivity extends SwipeBackActivity {
 							try {
 								if (content_type.equals("article")) { // 文章类型
 									body_data = response.getString("template_html");
-									log.d(body_data);
 									mWebView.loadDataWithBaseURL(null, body_data, "text/html",
 											"utf-8", null);
 								} else if (content_type.equals("video")) { // 视频类型
@@ -143,10 +148,7 @@ public class WebViewActivity extends SwipeBackActivity {
 
 									JSONObject video = response.getJSONObject("video");
 									video_url = video.getString("player_url");
-
-									// fullScreenButton.setVisibility(View.VISIBLE);
 								} else {
-									log.e();
 								}
 							} catch (JSONException e) {
 								log.w("error in parsing JSON : body_html");
@@ -157,15 +159,15 @@ public class WebViewActivity extends SwipeBackActivity {
 
 					@Override
 					public void onError(NetroidError error) {
-						String data = error.getMessage();
-						mWebView.loadData(data, "text/plain", "utf-8");
+						super.onError(error);
+						Util.showToast(WebViewActivity.this, "网络开小差了,不如再试试吧~");
 					}
 
 					@Override
 					public void onPreExecute() {
 						mProgressDialog = new ProgressDialog(WebViewActivity.this,
 								AlertDialog.THEME_HOLO_LIGHT);
-						mProgressDialog.setMessage("Loading...");
+						mProgressDialog.setMessage(getResources().getString(R.string.waiting_tips));
 						mProgressDialog.setIndeterminate(false);
 						mProgressDialog.setCancelable(true);
 						mProgressDialog.setCanceledOnTouchOutside(false); // 点击对话框边缘不能取消
@@ -176,6 +178,8 @@ public class WebViewActivity extends SwipeBackActivity {
 								Netroid.getRequestQueue().cancelAll(REQUESTS_TAG);
 							}
 						});
+						mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
+								R.drawable.myprogressbar));
 						mProgressDialog.show();
 					}
 
@@ -189,24 +193,31 @@ public class WebViewActivity extends SwipeBackActivity {
 		// 设置请求标识，这个标识可用于终止该请求时传入的Key
 		request.setTag(REQUESTS_TAG);
 		Netroid.addRequest(request);
+
+		if (VideoActivity.getPhoneAndroidSDK() >= 14) {// 4.0 需打开硬件加速
+			getWindow().setFlags(0x1000000, 0x1000000);
+		}
+		
+		startCountTimeThread();
 	}
 
 	@Override
 	protected void onPause() {
-		mWebView.onPause();
 		super.onPause();
+		mWebView.onPause();
 	}
 
 	@Override
 	protected void onResume() {
-		mWebView.onResume();
 		super.onResume();
+		mWebView.onResume();
+		mWebView.loadDataWithBaseURL(null, body_data, "text/html", "utf-8", null);
 	}
 
 	@Override
 	protected void onDestroy() {
-		mWebView.destroy();
 		super.onDestroy();
+		mWebView.destroy();
 	}
 
 	private void initEventsRegister() {
@@ -289,24 +300,56 @@ public class WebViewActivity extends SwipeBackActivity {
 
 	// 处理点赞
 	private void handleLike() {
-		if (likeFlag)
-			return;
+		if (likeFlag) { // 已经点赞->取消
+			String url = "http://218.192.166.167:3030/v1/contents/" + id + "/unlike";
+			Map<String, String> mParams = new HashMap<String, String>();
+			Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
+				@Override
+				public void onSuccess(String arg0) {
+					log.d(arg0);
+				}
+			}));
 
-		String url = "http://218.192.166.167:3030/v1/contents/" + id + "/like";
-
-		Map<String, String> mParams = new HashMap<String, String>();
-		Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
-			@Override
-			public void onSuccess(String arg0) {
-				log.d(arg0);
+			// 去除点赞列表里面对应的id
+			String[] strings = S.getStringSet(getApplicationContext(), "liked_list");
+			String regularEx = S.regularEx;
+			String tmp_all = "";
+			Boolean status = false;
+			for (int i = 1; i < strings.length; i++) {
+				if (itemURL.equals(strings[i])) {
+					if (strings[i].equals(itemURL)) {
+						status = true;
+						i = i + 8; // 算上i++,跳过9个
+						continue;
+					}
+					tmp_all = tmp_all + regularEx + strings[i];
+				}
 			}
-		}));
+			S.put(getApplicationContext(), "liked_list", tmp_all);
 
-		// 点赞 +1
-		likeFlag = true;
-		likeButton.setImageResource(R.drawable.babeltower_like_on);
-		S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
-		Util.showToast(WebViewActivity.this, "Nice!");
+			if (status) {
+				likeFlag = false;
+				likeButton.setImageResource(R.drawable.babeltower_like_off);
+				Util.showToast(WebViewActivity.this, "已取消点赞");
+			} else {
+				log.w("取消点赞失败");
+			}
+		} else { // 未点赞->点赞
+			String url = "http://218.192.166.167:3030/v1/contents/" + id + "/like";
+			Map<String, String> mParams = new HashMap<String, String>();
+			Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
+				@Override
+				public void onSuccess(String arg0) {
+					log.d(arg0);
+				}
+			}));
+
+			// 点赞 +1
+			likeFlag = true;
+			likeButton.setImageResource(R.drawable.babeltower_like_on);
+			S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
+			Util.showToast(WebViewActivity.this, "Nice!");
+		}
 	}
 
 	public class PutRequest extends StringRequest {
@@ -369,6 +412,114 @@ public class WebViewActivity extends SwipeBackActivity {
 				Util.showToast(WebViewActivity.this, "已收藏");
 			} else {
 				log.w("收藏失败");
+			}
+		}
+	}
+	
+	
+	/**
+	 * 开始启动线程控制按钮组件的显示.
+	 */
+	private void startCountTimeThread() {
+		mCountTimeThread = new CountTimeThread(3);
+		mCountTimeThread.start();
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			// 重置mControllButtonLayout已经显示的时间
+			mCountTimeThread.reset();
+			
+			boolean isVisible = (floatActionButton_up.getVisibility() == View.VISIBLE);
+			if (!isVisible) {
+				// 当有按下事件时,如果控件不可见,则使其可见.
+				floatActionButton_up.setVisibility(View.VISIBLE);
+				return true;
+			}
+		}
+		return super.onTouchEvent(event);
+	}
+
+	// 隐藏悬浮按钮
+	private void hide() {
+		if(content_type.equals("video")) return;
+		floatActionButton_up.setVisibility(View.INVISIBLE);
+	}
+
+	// 自动隐藏按钮的一个handler
+	
+
+	public static class MyHandler extends Handler {
+
+		WeakReference<WebViewActivity> mWebViewActivity;
+		private final int MSG_HIDE = 0x0001;
+
+		public MyHandler(WebViewActivity webViewActivity) {
+			mWebViewActivity = new WeakReference<WebViewActivity>(webViewActivity);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			final WebViewActivity webViewActivity = mWebViewActivity.get();
+			if (webViewActivity != null) {
+				switch (msg.what) {
+				case MSG_HIDE:
+					webViewActivity.hide();
+					break;
+				}
+			}
+
+			super.handleMessage(msg);
+		}
+
+		public void sendHideControllMessage() {
+			obtainMessage(MSG_HIDE).sendToTarget();
+		}
+	}
+
+	// 计时器进程
+	private class CountTimeThread extends Thread {
+		private final long maxVisibleTime;
+		private long startVisibleTime;
+
+		/**
+		 * @param second
+		 *            设置按钮控件最大可见时间,单位是秒
+		 */
+		public CountTimeThread(int second) {
+			// 将时间换算成毫秒
+			maxVisibleTime = second * 1000;
+
+			// 设置为后台线程.
+			setDaemon(true);
+		}
+
+		/**
+		 * 每当界面有操作时就需要重置mControllButtonLayout开始显示的时间,
+		 */
+		public synchronized void reset() {
+			startVisibleTime = System.currentTimeMillis();
+		}
+
+		public void run() {
+			startVisibleTime = System.currentTimeMillis();
+
+			while (true) {
+				// 如果已经到达了最大显示时间, 则隐藏功能控件.
+				if ((startVisibleTime + maxVisibleTime) < System.currentTimeMillis()) {
+					// 发送隐藏按钮控件消息.
+					mHandler.sendHideControllMessage();
+
+					startVisibleTime = System.currentTimeMillis();
+				}
+
+				try {
+					// 线程休眠1s.
+					Thread.sleep(1000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

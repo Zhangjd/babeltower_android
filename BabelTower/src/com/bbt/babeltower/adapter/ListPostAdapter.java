@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class ListPostAdapter extends BaseAdapter {
@@ -72,21 +73,35 @@ public class ListPostAdapter extends BaseAdapter {
 		PostBean postBean = postBeans.get(position);
 		String imageURL;
 		if (postBean.getContentType().equals("album")) {
-			convertView = LayoutInflater.from(context).inflate(R.layout.listview_main_big_cell,
-					parent, false);
-			imageURL = postBean.getHeaderImageUrl();
-		} else {
-			convertView = LayoutInflater.from(context).inflate(R.layout.listview_main_small_cell, parent,
+			convertView = LayoutInflater.from(context).inflate(R.layout.list_item_big_cell, parent,
 					false);
+			imageURL = postBean.getHeaderImageUrl();
+			imageView = (ImageView) convertView.findViewById(R.id.post_list_image);
+			// 改变ViewPager高度按16:9
+			imageView.post(new Runnable() {
+				@Override
+				public void run() {
+					int width = imageView.getWidth();
+					if (width == 0)
+						return;
+					int height = width * 9 / 16;
+					LayoutParams lp = (LayoutParams) imageView.getLayoutParams();
+					lp.height = height;
+					imageView.setLayoutParams(lp);
+				}
+			});
+		} else {
+			convertView = LayoutInflater.from(context).inflate(R.layout.list_item_small_cell,
+					parent, false);
 			imageURL = postBean.getImageUrl();
+			imageView = (ImageView) convertView.findViewById(R.id.post_list_image);
 		}
 
 		titleTextView = (TextView) convertView.findViewById(R.id.post_list_text);
 		publisherTextView = (TextView) convertView.findViewById(R.id.post_list_publisher);
 		timeTextView = (TextView) convertView.findViewById(R.id.post_list_updated_at);
-		imageView = (ImageView) convertView.findViewById(R.id.post_list_image);
 
-		// �? ImageView 设置�?�? tag (作用见下�?)
+		// 防止错乱,设置标记
 		imageView.setTag(imageURL);
 
 		titleTextView.setText(postBean.getTitle()); // TextView换行?Util.getText
@@ -105,7 +120,6 @@ public class ListPostAdapter extends BaseAdapter {
 		}
 
 		// ListView 异步加载图片之所以错位的根本原因是重用了 convertView 且有异步操作
-		// �?�?单的解决方法就是网上说的，给 ImageView 设置�?�? tag, 并预设一个图�?
 		if (imageURL != null && imageView.getTag() != null && imageView.getTag().equals(imageURL)) {
 			ImageLoader.getInstance().displayImage(imageURL, imageView, options,
 					new SimpleImageLoadingListener() {
@@ -122,7 +136,7 @@ public class ListPostAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	// 添加到链表头�?
+	// 添加到链表头
 	public void appendPost(LinkedList<PostBean> newPostBeans) {
 		for (int i = 0; i < newPostBeans.size(); i++) {
 			PostBean bean = newPostBeans.get(i);

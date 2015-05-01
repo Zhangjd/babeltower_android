@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.bbt.babeltower.R;
+import com.bbt.babeltower.base.MyApplication;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class SettingAdapter extends BaseAdapter {
@@ -60,6 +64,12 @@ public class SettingAdapter extends BaseAdapter {
 			listItemView = new ListItemView();
 			listItemView.setting_name = (TextView) convertView.findViewById(R.id.setting_name);
 			convertView.setTag(listItemView);
+
+			if (position == 1 && MyApplication.updateFlag == true) {
+				ImageView imageView = (ImageView) convertView
+						.findViewById(R.id.setting_update_tips);
+				imageView.setVisibility(View.VISIBLE);
+			}
 		} else {
 			listItemView = (ListItemView) convertView.getTag();
 		}

@@ -8,13 +8,16 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +27,7 @@ import com.bbt.babeltower.activity.SpecialActivity;
 import com.bbt.babeltower.activity.WebViewActivity;
 import com.bbt.babeltower.bean.PostBean;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
@@ -51,19 +55,46 @@ public class Util {
 	}
 
 	public static SlidingMenu initSlidingMenu(Activity context) {
+		@SuppressWarnings("deprecation")
+		int screenWidth = context.getWindowManager().getDefaultDisplay().getWidth();
+		int menuWidth = (int) (screenWidth * 0.389);
+		
 		SlidingMenu slidingMenu = new SlidingMenu(context);
 		slidingMenu.setMode(SlidingMenu.LEFT); // 设置菜单模式
-		slidingMenu.setBehindOffsetRes(R.dimen.sliding_menu_offset); // 设置侧滑栏完全展开之后，距离另外一边的距离
-		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN); // 设置侧滑栏的触摸模式(3种)
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN); // 设置侧滑栏的触摸模式(3种)
 		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_FULLSCREEN); // SlideMenu本身有bug，按照https://github.com/jfeinstein10/SlidingMenu/issues/446进行了修改
 		slidingMenu.attachToActivity(context, SlidingMenu.SLIDING_CONTENT); // 将SlidingMenu连接到Activity
 		slidingMenu.setMenu(R.layout.slidemenu_left); // 设置菜单layout
 		slidingMenu.setShadowDrawable(R.drawable.shadow); // 设置阴影
-		slidingMenu.setShadowWidth(30); // 设置阴影宽度
+		slidingMenu.setShadowWidth(15); // 设置阴影宽度
 		slidingMenu.setFadeEnabled(true);
-		slidingMenu.setFadeDegree(0.6f); // 设置菜单刚滑出时候的渐变度
+		slidingMenu.setFadeDegree(0.8f); // 设置菜单刚滑出时候的渐变度
+		slidingMenu.setBehindOffset(screenWidth-menuWidth); // 设置侧滑栏完全展开之后，距离另外一边的距离(pixels)
+
+		// 左上角的视差效果
+		final ImageButton switchButton = (ImageButton) context.findViewById(R.id.header_but);
+		final LayoutParams params = (LayoutParams) switchButton.getLayoutParams();
+		final Context ct = context;
+		CanvasTransformer mTransformer = new CanvasTransformer() {
+			@Override
+			public void transformCanvas(Canvas canvas, float percentOpen) {
+				params.width = dip2px(ct, 16 - 11 * percentOpen);
+				switchButton.setLayoutParams(params);
+			}
+		};
+		slidingMenu.setBehindCanvasTransformer(mTransformer);
 
 		return slidingMenu;
+	}
+
+	public static int dip2px(Context context, float dpValue) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dpValue * scale + 0.5f);
+	}
+
+	public static int px2dip(Context context, float pxValue) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (pxValue / scale + 0.5f);
 	}
 
 	public static DisplayImageOptions getImageOption(Context context) {

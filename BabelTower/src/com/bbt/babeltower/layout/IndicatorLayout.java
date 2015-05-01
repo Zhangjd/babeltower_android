@@ -33,7 +33,7 @@ public class IndicatorLayout extends LinearLayout implements OnPageChangeListene
 			return;
 		}
 		for (int i = 0; i < count; i++) {
-			View view = LayoutInflater.from(context).inflate(R.layout.indicate_image, null);
+			View view = LayoutInflater.from(context).inflate(R.layout.index_focus_indicator, null);
 			this.addView(view);
 		}
 		// this.getChildAt(0).setSelected(true);

@@ -9,12 +9,13 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.avos.avoscloud.LogUtil.log;
 import com.bbt.babeltower.R;
+import com.bbt.babeltower.activity.MainActivity;
 import com.bbt.babeltower.adapter.ListPostAdapter;
 import com.bbt.babeltower.adapter.PageCarouselAdapter;
 import com.bbt.babeltower.base.ApiData;
 import com.bbt.babeltower.base.ApiUrl;
+import com.bbt.babeltower.base.MyApplication;
 import com.bbt.babeltower.base.Netroid;
 import com.bbt.babeltower.base.S;
 import com.bbt.babeltower.base.Util;
@@ -24,6 +25,7 @@ import com.bbt.babeltower.layout.IndicatorLayout;
 import com.duowan.mobile.netroid.Listener;
 import com.duowan.mobile.netroid.NetroidError;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
+import com.gc.materialdesign.widgets.SnackBar;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
@@ -33,8 +35,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,6 +48,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -58,7 +63,6 @@ public class MainFragment extends Fragment {
 	private PullToRefreshListView listView;
 	private ListPostAdapter listPostAdapter;
 	private ScheduledExecutorService scheduledExecutorService; // 自动翻页ViewPager的服务
-	private MyHandler mHandler = new MyHandler(this);
 
 	// 关于Focus ViewPager的数据
 	private int currentViewPagerItem; // 当前ViewPager页面索引
@@ -70,12 +74,32 @@ public class MainFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		initOnCreate();
 		loadTimeline(); // 从本地读取Timeline
+
+		// 提示更新
+		new Thread() {
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					if (MyApplication.updateResponse != null) {
+						Message msg = new Message();
+						mUpdateHandler.sendMessage(msg);
+					}
+					if (S.getString(getActivity(), "firstOpen").equals("")) {
+						S.put(getActivity(), "firstOpen", "1");
+						Message msg = new Message();
+						mFirstStartHandler.sendMessage(msg);
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			};
+		}.start();
 	}
 
 	// Fragment在不可见的时候会回收所有View，所以在出栈的时候上一个Fragment需要重新初始化View
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.view = inflater.inflate(R.layout.listview_main, container, false);
+		this.view = inflater.inflate(R.layout.index_timeline, container, false);
 		this.initPostListView(); // Timeline部分
 		this.initPageView(); // Focus部分
 		if (focusLoadedFlag == false)
@@ -84,7 +108,7 @@ public class MainFragment extends Fragment {
 		listPostAdapter.notifyDataSetChanged();
 		TextView textView = (TextView) pageView.findViewById(R.id.vp_main_text);
 		if (listPostAdapter.getCount() == 0) {
-			textView.setText("还没有内容，下拉刷新看看~");
+			textView.setText("下拉刷新看看~");
 		} else {
 			textView.setText("新闻列表");
 			textView.setVisibility(View.GONE);
@@ -100,6 +124,17 @@ public class MainFragment extends Fragment {
 		// 设置标题
 		TextView titleTextView = (TextView) getActivity().findViewById(R.id.header_textview);
 		titleTextView.setText("今日新闻");
+		// 改变ViewPager高度按16:9
+		viewPager.post(new Runnable() {
+			@Override
+			public void run() {
+				int width = viewPager.getWidth();
+				if (width == 0)
+					return;
+				int height = width * 9 / 16;
+				viewPager.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
+			}
+		});
 		// 每隔5秒钟切换一张图片
 		startViewPagerTask();
 	}
@@ -131,7 +166,7 @@ public class MainFragment extends Fragment {
 
 	@SuppressLint("InflateParams")
 	private void initPageView() {
-		pageView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_main, null);
+		pageView = LayoutInflater.from(getActivity()).inflate(R.layout.index_outline, null);
 		viewPager = (CarouselViewPager) pageView.findViewById(R.id.vp_main);
 		pageCarouselAdapter = new PageCarouselAdapter(getActivity());
 		pageCarouselAdapter.setPostBeans(focusData);
@@ -152,6 +187,9 @@ public class MainFragment extends Fragment {
 		}
 	}
 
+	// 翻页ViewPager的Handler
+	private MyHandler mHandler = new MyHandler(this);
+
 	public static class MyHandler extends Handler {
 		WeakReference<MainFragment> mFragment;
 
@@ -167,11 +205,95 @@ public class MainFragment extends Fragment {
 		}
 	}
 
+	// 弹出升级提示框的Handler
+	private UpdateHandler mUpdateHandler = new UpdateHandler(this);
+
+	public static class UpdateHandler extends Handler {
+		WeakReference<MainFragment> mFragment;
+
+		public UpdateHandler(MainFragment fragment) {
+			mFragment = new WeakReference<MainFragment>(fragment);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			final MainFragment theFragment = mFragment.get();
+			JSONObject response = MyApplication.updateResponse;
+			try {
+				MyApplication.updateResponse = null;
+				// Dialog materialDialog = new Dialog(theFragment.getActivity(),
+				// "新版本下载", "版本号:"
+				// + response.getString("version") + "\n更新说明: "
+				// + response.getString("description"));
+				// materialDialog.setOnAcceptButtonClickListener(new
+				// View.OnClickListener() {
+				//
+				// @Override
+				// public void onClick(View v) {
+				// Intent intent = new Intent();
+				// intent.setAction("android.intent.action.VIEW");
+				// Uri content_url = Uri.parse(ApiUrl.BABIETA_DOWNLOAD);
+				// intent.setData(content_url);
+				// theFragment.startActivity(intent);
+				// }
+				// });
+				// materialDialog.addCancelButton("取消", new
+				// View.OnClickListener() {
+				//
+				// @Override
+				// public void onClick(View v) {
+				//
+				// }
+				// });
+				// materialDialog.show();
+
+				SnackBar snackbar = new SnackBar(theFragment.getActivity(), "检测到新版本\n版本号:"
+						+ response.getString("version") + "\n更新说明: "
+						+ response.getString("description"), "下载", new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent();
+						intent.setAction("android.intent.action.VIEW");
+						Uri content_url = Uri.parse(ApiUrl.BABIETA_DOWNLOAD);
+						intent.setData(content_url);
+						theFragment.startActivity(intent);
+					}
+				});
+				snackbar.setDismissTimer(5000);
+				snackbar.show();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// 首次启动的Handler
+	private FirstStartHandler mFirstStartHandler = new FirstStartHandler(this);
+
+	public static class FirstStartHandler extends Handler {
+		WeakReference<MainFragment> mFragment;
+
+		public FirstStartHandler(MainFragment fragment) {
+			mFragment = new WeakReference<MainFragment>(fragment);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			MainActivity.toggleMenu();
+		}
+	}
+
 	private void initPostListView() {
 		listView = (PullToRefreshListView) view.findViewById(R.id.listview_main);
 		listView.getRefreshableView().setDivider(null); // 分隔符
-		//listView.getRefreshableView().setVerticalScrollBarEnabled(false); // 竖直方向滚动条
+		// listView.getRefreshableView().setVerticalScrollBarEnabled(false); //
+		// 竖直方向滚动条
 		listView.setMode(Mode.BOTH); // 设置上下拉模式
+		listView.getLoadingLayoutProxy().setRefreshingLabel(
+				getResources().getString(R.string.waiting_tips));
 		listView.setAdapter(listPostAdapter);
 
 		// 设置点击Timeline Item的监听
@@ -184,16 +306,16 @@ public class MainFragment extends Fragment {
 				Util.handleItemClick(activity, postBean);
 			}
 		});
-		
+
 		// 设置上下拉的监听
 		listView.setOnRefreshListener(new OnRefreshListener2<ListView>() {
-			// 顶部下拉刷新
+			// 顶部下拉刷新timeline
 			@Override
 			public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+				// 显示最近一次刷新的时间
 				String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
 						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
 								| DateUtils.FORMAT_ABBREV_ALL);
-
 				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
 
 				new AsyncTask<Void, Void, String>() {
@@ -217,7 +339,7 @@ public class MainFragment extends Fragment {
 				requestForFocus();
 			}
 
-			// 底部上拉刷新
+			// 底部上拉刷新timeline
 			@Override
 			public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
 				int count = listPostAdapter.getCount();
@@ -233,8 +355,8 @@ public class MainFragment extends Fragment {
 						else
 							minCnt = minCnt > bean.getId() ? bean.getId() : minCnt;
 					}
-					targetURL = ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_CONTENT_LIST + "?max_id="
-							+ (minCnt - 1);
+					targetURL = ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_CONTENT_LIST
+							+ "?on_timeline=true&max_id=" + (minCnt - 1);
 				}
 				final String final_targetURL = targetURL;
 
@@ -271,12 +393,8 @@ public class MainFragment extends Fragment {
 				listPostAdapter.clearPost(); // 上拉刷新,清空原来的数据
 				listPostAdapter.appendPost(postBeans);
 				listPostAdapter.sortPost();
-				// 顶部刷新本地存储TimeLine数据,这里新开了一个线程来处理,减少卡顿
-				new Thread(new Runnable() {
-					public void run() {
-						saveTimeline();
-					}
-				}).start();
+
+				saveTimeline();
 			} else { // 下拉刷新,直接添加数据
 				listPostAdapter.appendPost(postBeans);
 				listPostAdapter.sortPost();
@@ -296,22 +414,20 @@ public class MainFragment extends Fragment {
 	// 存储TimeLine到SharedPreferences中
 	private void saveTimeline() {
 		S.put(getActivity(), "timeline_list", "");
-
 		int count = listPostAdapter.getCount() > 10 ? 10 : listPostAdapter.getCount(); // 只保存前10条
-
+		String targetString = "";
+		String seperator = S.regularEx;
 		for (int i = 0; i < count; i++) {
 			PostBean bean = (PostBean) listPostAdapter.getItem(i);
 
-			S.addStringSet(getActivity(), "timeline_list", String.valueOf(bean.getId())); // 1id
-			S.addStringSet(getActivity(), "timeline_list", bean.getItemURL()); // 2链接
-			S.addStringSet(getActivity(), "timeline_list", bean.getTitle()); // 3标题
-			S.addStringSet(getActivity(), "timeline_list", bean.getAuthor()); // 4作者
-			S.addStringSet(getActivity(), "timeline_list", bean.getCreatedAt()); // 5时间
-			S.addStringSet(getActivity(), "timeline_list", bean.getImageUrl()); // 6图片地址
-			S.addStringSet(getActivity(), "timeline_list", bean.getHeaderImageUrl()); // 7头图URL
-			S.addStringSet(getActivity(), "timeline_list", bean.getDescription()); // 8注释
-			S.addStringSet(getActivity(), "timeline_list", bean.getContentType()); // 9类型
+			// 1id 2链接 3标题 4作者 5时间 6图片地址 7头图URL 8注释 9类型
+			targetString = targetString + seperator + String.valueOf(bean.getId()) + seperator
+					+ bean.getItemURL() + seperator + bean.getTitle() + seperator
+					+ bean.getAuthor() + seperator + bean.getCreatedAt() + seperator
+					+ bean.getImageUrl() + seperator + bean.getHeaderImageUrl() + seperator
+					+ bean.getDescription() + seperator + bean.getContentType();
 		}
+		S.put(getActivity(), "timeline_list", targetString);
 	}
 
 	// 从本地缓存读取TimeLine
@@ -320,7 +436,7 @@ public class MainFragment extends Fragment {
 		String[] collectlist = S.getStringSet(getActivity(), "timeline_list");
 
 		for (int i = 1; i < (collectlist.length); i++) {
-			System.out.println(collectlist[i]);
+			// System.out.println(collectlist[i]);
 		}
 
 		for (int i = 1; i < (collectlist.length);) {
@@ -330,6 +446,7 @@ public class MainFragment extends Fragment {
 				Integer.valueOf(collectlist[i]);
 			} catch (Exception e) {
 				e.printStackTrace();
+				S.put(getActivity(), "timeline_list", "");
 				return false;
 			}
 
@@ -360,13 +477,19 @@ public class MainFragment extends Fragment {
 			return false;
 		} else {
 			JSONObject jsonRequest = null;
-			String url = ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_CONTENT_LIST + "?on_focus=true";
+			String url = ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_CONTENT_LIST
+					+ "?on_focus=true&limit=5";
 			JsonObjectRequest request = new JsonObjectRequest(url, jsonRequest,
 					new Listener<JSONObject>() {
 						@Override
 						public void onSuccess(JSONObject response) {
 							try {
 								if (response.has("status") && response.getInt("status") == 0) {
+									// 先清空
+									LinkedList<PostBean> temp = new LinkedList<PostBean>();
+									pageCarouselAdapter.setPostBeans(temp);
+									pageCarouselAdapter.notifyDataSetChanged();
+									// 再读取内容
 									String result = response.toString();
 									focusData = PostBean.parseSection(result, getActivity());
 									pageCarouselAdapter.setPostBeans(focusData);
@@ -383,8 +506,6 @@ public class MainFragment extends Fragment {
 
 						@Override
 						public void onError(NetroidError error) {
-							String data = error.getMessage();
-							log.e(data);
 							Util.showToast(getActivity(), "网络开小差了,不如再试试吧~");
 						}
 					});

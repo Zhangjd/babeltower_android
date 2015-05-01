@@ -21,5 +21,13 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
+    
+    <style name="textShadow">
+        <item name="android:shadowColor">#5c5c5c</item>
+        <item name="android:shadowDx">3</item>
+        <item name="android:shadowDy">3</item>
+        <item name="android:shadowRadius">9</item>
+    </style>
+
 
 </resources>

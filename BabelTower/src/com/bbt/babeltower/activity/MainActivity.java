@@ -2,7 +2,6 @@ package com.bbt.babeltower.activity;
 
 import com.avos.avoscloud.AVAnalytics;
 import com.bbt.babeltower.R;
-import com.bbt.babeltower.base.Netroid;
 import com.bbt.babeltower.base.Util;
 import com.bbt.babeltower.fragment.MainFragment;
 import com.bbt.babeltower.layout.SwipeBackLayout;
@@ -17,12 +16,13 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 
 	public static MainFragment mainFragment = new MainFragment();
 	public static int mainFragmentFlag = 1;
-	
+
 	private static SlidingMenu slidingMenu;
 	protected SwipeBackLayout layout;
 
@@ -32,8 +32,6 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("MainActivity", "onCreate called");
-
-		Netroid.init(this); // 外部HTTP库的初始化
 
 		setContentView(R.layout.activity_main);
 		slidingMenu = Util.initSlidingMenu(this);
@@ -87,6 +85,13 @@ public class MainActivity extends FragmentActivity {
 	public void initHeaderButtonSwitch() {
 		ImageButton button = (ImageButton) findViewById(R.id.header_but);
 		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				slidingMenu.toggle();
+			}
+		});
+		TextView textView = (TextView) findViewById(R.id.header_textview);
+		textView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				slidingMenu.toggle();

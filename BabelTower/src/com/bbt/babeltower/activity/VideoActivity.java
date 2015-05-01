@@ -34,9 +34,9 @@ public class VideoActivity extends SwipeBackActivity {
 		initViews();
 		initWebView();
 
-		// if (getPhoneAndroidSDK() >= 14) {// 4.0 需打开硬件加速
-		// getWindow().setFlags(0x1000000, 0x1000000);
-		// }
+		if (getPhoneAndroidSDK() >= 14) {// 4.0 需打开硬件加速
+			getWindow().setFlags(0x1000000, 0x1000000);
+		}
 
 		mWebView.loadUrl(videoURL);
 

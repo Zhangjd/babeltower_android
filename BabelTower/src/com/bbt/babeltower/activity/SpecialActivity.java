@@ -40,7 +40,6 @@ import android.widget.TextView;
 //专题activity
 public class SpecialActivity extends SwipeBackActivity {
 
-	private String contentsURL = "";
 	private String subContentsURL = "";
 
 	private ImageView special_header_image;
@@ -48,9 +47,7 @@ public class SpecialActivity extends SwipeBackActivity {
 	private TextView special_description;
 	private ProgressDialog mProgressDialog;
 	private ImageButton likeButton;
-	private TextView likeTextView;
 	private ImageButton collectButton;
-	private TextView pageviewTextView;
 	private ImageButton backButton;
 
 	private String id = "";
@@ -63,8 +60,6 @@ public class SpecialActivity extends SwipeBackActivity {
 	private String updated_at = "";
 	private String description = "";
 
-	private int like = 0;
-	private int views = 0;
 	private int collectFlag = 0;
 	private boolean likeFlag = false;
 
@@ -81,7 +76,7 @@ public class SpecialActivity extends SwipeBackActivity {
 		Util.setStatusBarColor(SpecialActivity.this);
 
 		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
-		titleTextView.setText("专题视图");
+		titleTextView.setText("");
 
 		// get data from bundle
 		Intent intent = getIntent();
@@ -112,6 +107,7 @@ public class SpecialActivity extends SwipeBackActivity {
 
 		// 子内容ListView,点击跳转到WebView
 		listView = (ListView) findViewById(R.id.special_subcontents_listview);
+		listView.setDivider(null);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -120,7 +116,6 @@ public class SpecialActivity extends SwipeBackActivity {
 			}
 		});
 
-		loadContents();
 		loadSubContents();
 		loadHeaderImage();
 	}
@@ -134,7 +129,7 @@ public class SpecialActivity extends SwipeBackActivity {
 					public void onPreExecute() {
 						mProgressDialog = new ProgressDialog(SpecialActivity.this,
 								AlertDialog.THEME_HOLO_LIGHT);
-						mProgressDialog.setMessage("Loading...");
+						mProgressDialog.setMessage(getResources().getString(R.string.waiting_tips));
 						mProgressDialog.setIndeterminate(false);
 						mProgressDialog.setCancelable(true);
 						mProgressDialog.setCanceledOnTouchOutside(false);
@@ -146,6 +141,8 @@ public class SpecialActivity extends SwipeBackActivity {
 
 							}
 						});
+						mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
+								R.drawable.myprogressbar));
 						mProgressDialog.show();
 					}
 
@@ -172,45 +169,12 @@ public class SpecialActivity extends SwipeBackActivity {
 
 					@Override
 					public void onError(NetroidError error) {
-						String data = error.getMessage();
-						log.e("onError.getMessage", data);
+						super.onError(error);
+						Util.showToast(SpecialActivity.this, "网络开小差了,不如再试试吧~");
 					}
 				});
 		// 设置请求标识，这个标识可用于终止该请求时传入的Key
 		request.setTag(REQUESTS_TAG);
-		Netroid.addRequest(request);
-	}
-
-	private void loadContents() {
-		contentsURL = ApiUrl.BABIETA_BASE_URL + "/v1/contents/" + id;
-		JSONObject jsonRequest = null;
-		JsonObjectRequest request = new JsonObjectRequest(contentsURL, jsonRequest,
-				new Listener<JSONObject>() {
-					@Override
-					public void onSuccess(JSONObject response) {
-						try {
-							if (response.has("status")) { // 有status:出错
-
-							} else {
-								views = response.getInt("views");
-								like = response.getInt("like");
-								likeTextView.setText(String.valueOf(like));
-								pageviewTextView.setText(String.valueOf(views));
-							}
-						} catch (JSONException e) {
-							log.e("JSONException", "解析子内容出错了!");
-							e.printStackTrace();
-						}
-					}
-
-					@Override
-					public void onError(NetroidError error) {
-						String data = error.getMessage();
-						log.e("onError.getMessage", data);
-					}
-				});
-		// 设置请求标识，这个标识可用于终止该请求时传入的Key
-		request.setTag("special_request2");
 		Netroid.addRequest(request);
 	}
 
@@ -268,10 +232,8 @@ public class SpecialActivity extends SwipeBackActivity {
 	}
 
 	private void initEventsRegister() {
-		this.likeButton = (ImageButton) findViewById(R.id.bottombar_like);
-		this.likeTextView = (TextView) findViewById(R.id.bottombar_like_counter);
-		this.collectButton = (ImageButton) findViewById(R.id.bottombar_collect);
-		this.pageviewTextView = (TextView) findViewById(R.id.bottombar_pageview_counter);
+		this.likeButton = (ImageButton) findViewById(R.id.webview_like);
+		this.collectButton = (ImageButton) findViewById(R.id.webview_collect);
 		this.backButton = (ImageButton) findViewById(R.id.back_button);
 
 		// find collections
@@ -279,7 +241,7 @@ public class SpecialActivity extends SwipeBackActivity {
 		for (int i = 0; i < strings.length; i++) {
 			if (itemURL.equals(strings[i])) {
 				collectFlag = 1;
-				collectButton.setImageResource(R.drawable.news_collected);
+				collectButton.setImageResource(R.drawable.babeltower_collect_on);
 				break;
 			}
 		}
@@ -289,7 +251,7 @@ public class SpecialActivity extends SwipeBackActivity {
 		for (int i = 1; i < likeSet.length; i++) {
 			if (itemURL.equals(likeSet[i])) {
 				likeFlag = true;
-				likeButton.setImageResource(R.drawable.message_vote);
+				likeButton.setImageResource(R.drawable.babeltower_like_on);
 				break;
 			}
 		}
@@ -322,26 +284,56 @@ public class SpecialActivity extends SwipeBackActivity {
 
 	// 处理点赞
 	private void handleLike() {
-		if (likeFlag)
-			return;
+		if (likeFlag) { // 已经点赞->取消
+			String url = "http://218.192.166.167:3030/v1/contents/" + id + "/unlike";
+			Map<String, String> mParams = new HashMap<String, String>();
+			Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
+				@Override
+				public void onSuccess(String arg0) {
+					log.d(arg0);
+				}
+			}));
 
-		String url = "http://218.192.166.167:3030/v1/contents/" + id + "/like";
-
-		Map<String, String> mParams = new HashMap<String, String>();
-		Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
-			@Override
-			public void onSuccess(String arg0) {
-				log.d(arg0);
+			// 去除点赞列表里面对应的id
+			String[] strings = S.getStringSet(getApplicationContext(), "liked_list");
+			String regularEx = S.regularEx;
+			String tmp_all = "";
+			Boolean status = false;
+			for (int i = 1; i < strings.length; i++) {
+				if (itemURL.equals(strings[i])) {
+					if (strings[i].equals(itemURL)) {
+						status = true;
+						i = i + 8; // 算上i++,跳过9个
+						continue;
+					}
+					tmp_all = tmp_all + regularEx + strings[i];
+				}
 			}
-		}));
+			S.put(getApplicationContext(), "liked_list", tmp_all);
 
-		// 点赞 +1
-		likeFlag = true;
-		int cnt = Integer.valueOf(likeTextView.getText().toString());
-		likeTextView.setText(String.valueOf(++cnt));
-		likeButton.setImageResource(R.drawable.message_vote);
-		S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
-		Util.showToast(SpecialActivity.this, "Nice!");
+			if (status) {
+				likeFlag = false;
+				likeButton.setImageResource(R.drawable.babeltower_like_off);
+				Util.showToast(SpecialActivity.this, "已取消点赞");
+			} else {
+				log.w("取消点赞失败");
+			}
+		} else { // 未点赞->点赞
+			String url = "http://218.192.166.167:3030/v1/contents/" + id + "/like";
+			Map<String, String> mParams = new HashMap<String, String>();
+			Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
+				@Override
+				public void onSuccess(String arg0) {
+					log.d(arg0);
+				}
+			}));
+
+			// 点赞 +1
+			likeFlag = true;
+			likeButton.setImageResource(R.drawable.babeltower_like_on);
+			S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
+			Util.showToast(SpecialActivity.this, "Nice!");
+		}
 	}
 
 	public class PutRequest extends StringRequest {
@@ -378,7 +370,7 @@ public class SpecialActivity extends SwipeBackActivity {
 
 			if (status) {
 				collectFlag = 0;
-				collectButton.setImageResource(R.drawable.news_collect);
+				collectButton.setImageResource(R.drawable.babeltower_collect_off);
 				Util.showToast(SpecialActivity.this, "已取消收藏");
 			} else {
 				log.w("取消收藏失败");
@@ -389,11 +381,7 @@ public class SpecialActivity extends SwipeBackActivity {
 
 			if (status) {
 				collectFlag = 1;
-				collectButton.setImageResource(R.drawable.news_collected);
-
-				TextView collectCnt = (TextView) findViewById(R.id.bottombar_pageview_counter);
-				int cnt = Integer.valueOf((String) collectCnt.getText());
-				collectCnt.setText(String.valueOf(++cnt));
+				collectButton.setImageResource(R.drawable.babeltower_collect_on);
 
 				// 处理缓存
 				S.addStringSet(getApplicationContext(), "collected_list", itemURL);

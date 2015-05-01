@@ -47,7 +47,7 @@ public class PageCarouselAdapter extends PagerAdapter {
 	// 做了两件事，第一：将当前视图添加到container中，第二：返回当前View
 	@Override
 	public Object instantiateItem(ViewGroup container, int position) {
-		final View view = LayoutInflater.from(context).inflate(R.layout.viewpage, container, false);
+		final View view = LayoutInflater.from(context).inflate(R.layout.index_focus, container, false);
 		final ImageView imageView = (ImageView) view.findViewById(R.id.view_page_image);
 
 		ImageLoader.getInstance().displayImage(postBeans.get(position).getHeaderImageUrl(),

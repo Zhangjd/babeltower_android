@@ -1,5 +1,6 @@
 package com.bbt.babeltower.activity;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import com.duowan.mobile.netroid.request.JsonObjectRequest;
 import com.duowan.mobile.netroid.request.StringRequest;
 import com.duowan.mobile.netroid.AuthFailureError;
 import com.duowan.mobile.netroid.Listener;
+import com.duowan.mobile.netroid.NetroidError;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -24,6 +26,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -59,6 +64,9 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 	private String photos = "";
 
 	private final String REQUESTS_TAG = "album_request";
+
+	private CountTimeThread mCountTimeThread;
+	private MyHandler mHandler = new MyHandler(this);
 
 	@SuppressLint({ "JavascriptInterface", "SetJavaScriptEnabled" })
 	@Override
@@ -124,7 +132,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 					public void onPreExecute() {
 						mProgressDialog = new ProgressDialog(AlbumWebViewActivity.this,
 								AlertDialog.THEME_HOLO_LIGHT);
-						mProgressDialog.setMessage("Loading...");
+						mProgressDialog.setMessage(getResources().getString(R.string.waiting_tips));
 						mProgressDialog.setIndeterminate(false);
 						mProgressDialog.setCancelable(true);
 						mProgressDialog.setCanceledOnTouchOutside(false); // 点击对话框边缘不能取消
@@ -135,6 +143,8 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 								Netroid.getRequestQueue().cancelAll(REQUESTS_TAG);
 							}
 						});
+						mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
+								R.drawable.myprogressbar));
 						mProgressDialog.show();
 					}
 
@@ -143,16 +153,24 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 					public void onFinish() {
 						mProgressDialog.cancel();
 					}
+
+					@Override
+					public void onError(NetroidError error) {
+						super.onError(error);
+						Util.showToast(AlbumWebViewActivity.this, "网络开小差了,不如再试试吧~");
+					}
 				});
 		request.setTag(REQUESTS_TAG);
 		Netroid.addRequest(request);
+
+		startCountTimeThread();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
-		titleTextView.setText(title);
+		titleTextView.setText("");
 	}
 
 	// 注入JS函数监听
@@ -224,6 +242,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 		for (int i = 0; i < strings.length; i++) {
 			if (itemURL.equals(strings[i])) {
 				collectFlag = 1;
+				collectButton.setImageResource(R.drawable.babeltower_collect_on);
 				break;
 			}
 		}
@@ -233,6 +252,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 		for (int i = 1; i < likeSet.length; i++) {
 			if (itemURL.equals(likeSet[i])) {
 				likeFlag = true;
+				likeButton.setImageResource(R.drawable.babeltower_like_on);
 				break;
 			}
 		}
@@ -271,24 +291,56 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 
 	// 处理点赞
 	private void handleLike() {
-		if (likeFlag)
-			return;
+		if (likeFlag) { // 已经点赞->取消
+			String url = "http://218.192.166.167:3030/v1/contents/" + id + "/unlike";
+			Map<String, String> mParams = new HashMap<String, String>();
+			Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
+				@Override
+				public void onSuccess(String arg0) {
+					log.d(arg0);
+				}
+			}));
 
-		String url = "http://218.192.166.167:3030/v1/contents/" + String.valueOf(id) + "/like";
-
-		Map<String, String> mParams = new HashMap<String, String>();
-		Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
-			@Override
-			public void onSuccess(String arg0) {
-				log.d(arg0);
+			// 去除点赞列表里面对应的id
+			String[] strings = S.getStringSet(getApplicationContext(), "liked_list");
+			String regularEx = S.regularEx;
+			String tmp_all = "";
+			Boolean status = false;
+			for (int i = 1; i < strings.length; i++) {
+				if (itemURL.equals(strings[i])) {
+					if (strings[i].equals(itemURL)) {
+						status = true;
+						i = i + 8; // 算上i++,跳过9个
+						continue;
+					}
+					tmp_all = tmp_all + regularEx + strings[i];
+				}
 			}
-		}));
+			S.put(getApplicationContext(), "liked_list", tmp_all);
 
-		// 点赞 +1
-		likeFlag = true;
-		likeButton.setImageResource(R.drawable.babeltower_like_on);
-		S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
-		Util.showToast(AlbumWebViewActivity.this, "Nice!");
+			if (status) {
+				likeFlag = false;
+				likeButton.setImageResource(R.drawable.babeltower_like_off);
+				Util.showToast(AlbumWebViewActivity.this, "已取消点赞");
+			} else {
+				log.w("取消点赞失败");
+			}
+		} else { // 未点赞->点赞
+			String url = "http://218.192.166.167:3030/v1/contents/" + id + "/like";
+			Map<String, String> mParams = new HashMap<String, String>();
+			Netroid.getRequestQueue().add(new PutRequest(url, mParams, new Listener<String>() {
+				@Override
+				public void onSuccess(String arg0) {
+					log.d(arg0);
+				}
+			}));
+
+			// 点赞 +1
+			likeFlag = true;
+			likeButton.setImageResource(R.drawable.babeltower_like_on);
+			S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
+			Util.showToast(AlbumWebViewActivity.this, "Nice!");
+		}
 	}
 
 	public class PutRequest extends StringRequest {
@@ -351,6 +403,113 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 				Util.showToast(AlbumWebViewActivity.this, "收藏成功");
 			} else {
 				log.w("收藏失败");
+			}
+		}
+	}
+
+	/**
+	 * 开始启动线程控制按钮组件的显示.
+	 */
+	private void startCountTimeThread() {
+		mCountTimeThread = new CountTimeThread(3);
+		mCountTimeThread.start();
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			// 重置mControllButtonLayout已经显示的时间
+			mCountTimeThread.reset();
+
+			boolean isVisible = (floatActionButton.getVisibility() == View.VISIBLE);
+			if (!isVisible) {
+				// 当有按下事件时,如果控件不可见,则使其可见.
+				floatActionButton.setVisibility(View.VISIBLE);
+				return true;
+			}
+		}
+		return super.onTouchEvent(event);
+	}
+
+	// 隐藏悬浮按钮
+	private void hide() {
+		if (content_type.equals("video"))
+			return;
+		floatActionButton.setVisibility(View.INVISIBLE);
+	}
+
+	// 自动隐藏按钮的一个handler
+
+	public static class MyHandler extends Handler {
+
+		WeakReference<AlbumWebViewActivity> mWebViewActivity;
+		private final int MSG_HIDE = 0x0001;
+
+		public MyHandler(AlbumWebViewActivity webViewActivity) {
+			mWebViewActivity = new WeakReference<AlbumWebViewActivity>(webViewActivity);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			final AlbumWebViewActivity webViewActivity = mWebViewActivity.get();
+			if (webViewActivity != null) {
+				switch (msg.what) {
+				case MSG_HIDE:
+					webViewActivity.hide();
+					break;
+				}
+			}
+
+			super.handleMessage(msg);
+		}
+
+		public void sendHideControllMessage() {
+			obtainMessage(MSG_HIDE).sendToTarget();
+		}
+	}
+
+	// 计时器进程
+	private class CountTimeThread extends Thread {
+		private final long maxVisibleTime;
+		private long startVisibleTime;
+
+		/**
+		 * @param second
+		 *            设置按钮控件最大可见时间,单位是秒
+		 */
+		public CountTimeThread(int second) {
+			// 将时间换算成毫秒
+			maxVisibleTime = second * 1000;
+
+			// 设置为后台线程.
+			setDaemon(true);
+		}
+
+		/**
+		 * 每当界面有操作时就需要重置mControllButtonLayout开始显示的时间,
+		 */
+		public synchronized void reset() {
+			startVisibleTime = System.currentTimeMillis();
+		}
+
+		public void run() {
+			startVisibleTime = System.currentTimeMillis();
+
+			while (true) {
+				// 如果已经到达了最大显示时间, 则隐藏功能控件.
+				if ((startVisibleTime + maxVisibleTime) < System.currentTimeMillis()) {
+					// 发送隐藏按钮控件消息.
+					mHandler.sendHideControllMessage();
+
+					startVisibleTime = System.currentTimeMillis();
+				}
+
+				try {
+					// 线程休眠1s.
+					Thread.sleep(1000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

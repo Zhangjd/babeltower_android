@@ -3,6 +3,7 @@
     <string-array name="menuList">
         <item>新闻 </item>
         <item>分类 </item>
+        <item></item>
         <item>收藏 </item>
         <item>设置</item>
     </string-array>

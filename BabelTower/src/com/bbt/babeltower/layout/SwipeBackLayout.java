@@ -33,6 +33,7 @@ public class SwipeBackLayout extends FrameLayout {
 	private boolean isSilding;
 	private boolean isFinish;
 	private Drawable mShadowDrawable;
+	private Drawable myShadow;
 	private Activity mActivity;
 	private List<ViewPager> mViewPagers = new LinkedList<ViewPager>();
 
@@ -47,6 +48,7 @@ public class SwipeBackLayout extends FrameLayout {
 		mScroller = new Scroller(context);
 
 		mShadowDrawable = getResources().getDrawable(R.drawable.shadow_left);
+		myShadow = getResources().getDrawable(R.drawable.babeltower_dark_mask);
 	}
 
 	public void attachToActivity(Activity activity) {
@@ -109,7 +111,6 @@ public class SwipeBackLayout extends FrameLayout {
 			if (moveX - downX > mTouchSlop && Math.abs((int) event.getRawY() - downY) < mTouchSlop) {
 				isSilding = true;
 			}
-
 			if (moveX - downX >= 0 && isSilding) {
 				mContentView.scrollBy(deltaX, 0);
 			}
@@ -185,15 +186,22 @@ public class SwipeBackLayout extends FrameLayout {
 		super.dispatchDraw(canvas);
 		if (mShadowDrawable != null && mContentView != null) {
 
-			int left = mContentView.getLeft() - mShadowDrawable.getIntrinsicWidth();
-			int right = left + mShadowDrawable.getIntrinsicWidth();
+			int left = 0 - viewWidth;
+			int right = 0;
 			int top = mContentView.getTop();
 			int bottom = mContentView.getBottom();
+			myShadow.setBounds(left, top, right, bottom);
+			double alpha = (1 - Math.abs(mContentView.getScrollX()) / (double) viewWidth) * 200;
+			myShadow.setAlpha((int) alpha);
+			myShadow.draw(canvas);
 
-			mShadowDrawable.setBounds(left, top, right, bottom);
+			int shadow_left = mContentView.getLeft() - mShadowDrawable.getIntrinsicWidth();
+			int shadow_right = shadow_left + mShadowDrawable.getIntrinsicWidth();
+			int shadow_top = mContentView.getTop();
+			int shadow_bottom = mContentView.getBottom();
+			mShadowDrawable.setBounds(shadow_left, shadow_top, shadow_right, shadow_bottom);
 			mShadowDrawable.draw(canvas);
 		}
-
 	}
 
 	/**
@@ -227,5 +235,4 @@ public class SwipeBackLayout extends FrameLayout {
 			}
 		}
 	}
-
 }

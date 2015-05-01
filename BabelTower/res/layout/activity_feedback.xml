@@ -4,42 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:fitsSystemWindows="true" >
+    android:fitsSystemWindows="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true" >
 
     <include
         android:id="@+id/text_include"
         layout="@layout/head_with_back" />
 
     <EditText
-        android:id="@+id/feedback_content"
+        android:id="@+id/feedback_contact"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/text_include"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/mytextview_selector"
-        android:hint="@string/feedback_babieta_content_hint"
-        android:maxLength="256"
-        android:maxLines="10"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp" >
-
-        <requestFocus />
-    </EditText>
-
-    <EditText
-        android:id="@+id/feedback_contact"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/feedback_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="34dp"
         android:background="@drawable/mytextview_selector"
         android:hint="@string/feedback_babieta_contact_hint"
         android:maxLength="64"
@@ -49,27 +27,50 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp" />
 
-    <Button
-        android:id="@+id/feedback_submit"
+    <ListView
+        android:id="@+id/feedback_listview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/feedback_bottombar"
         android:layout_below="@+id/feedback_contact"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/mybutton_selector"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
-        android:text="@string/feedback_submit"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp" />
+        android:divider="#00000000" >
+    </ListView>
 
-    <TextView
-        android:id="@+id/feedback_textview"
+    <LinearLayout
+        android:id="@+id/feedback_bottombar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/feedback_submit"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" />
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/feedback_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_weight="0.8"
+            android:background="@drawable/mytextview_selector"
+            android:hint="@string/feedback_babieta_content_hint"
+            android:maxLength="256"
+            android:maxLines="10"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp" >
+        </EditText>
+
+        <Button
+            android:id="@+id/feedback_submit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_weight="0.2"
+            android:background="@drawable/mybutton_selector"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/feedback_submit"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+    </LinearLayout>
 
 </RelativeLayout>

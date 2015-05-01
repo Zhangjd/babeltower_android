@@ -4,14 +4,14 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/babeltower_actionbar_background"
-    android:paddingBottom="8dp"
-    android:paddingTop="8dp" >
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp" >
 
     <ImageButton
         android:id="@+id/header_but"
-        android:layout_width="48.9dp"
-        android:layout_height="32.4dp"
-        android:layout_marginRight="10dp"
+        android:layout_width="16dp"
+        android:layout_height="15dp"
+        android:layout_centerVertical="true"
         android:background="#00000000"
         android:scaleType="fitXY"
         android:src="@drawable/babeltower_menu_toggle" />
@@ -20,12 +20,13 @@
         android:id="@+id/header_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/header_but"
+        android:layout_marginLeft="18dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:text="@string/header_name"
-        android:textColor="@color/grey"
-        android:textSize="18sp" />
+        android:textColor="#505050"
+        android:textSize="17sp" />
 
 </RelativeLayout>

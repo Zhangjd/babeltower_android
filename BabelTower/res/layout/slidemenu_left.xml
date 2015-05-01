@@ -4,30 +4,48 @@
     android:background="#ffffffff"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
         <RelativeLayout
+            android:id="@+id/slidingmenu_logo"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="50dp" >
+            android:layout_marginBottom="81.6dp"
+            android:layout_marginTop="69.6dp"
+            android:focusable="false" >
 
             <Button
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:id="@+id/slidingmenu_logo_img"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/babeltower_icon" />
+                android:background="@drawable/babeltower_slidemenu_logo" />
         </RelativeLayout>
 
         <fragment
             android:id="@+id/sliging_list"
             android:name="com.bbt.babeltower.fragment.SlidingListFragment"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-    </LinearLayout>
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/slidingmenu_logo"
+            android:layout_marginBottom="50dp" />
+
+        <TextView
+            android:id="@+id/slidingmenu_bottom"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:focusable="false"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1"
+            android:paddingBottom="10dp"
+            android:text="@string/slidingmenu_bottomtext"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp" />
+    </RelativeLayout>
 
 </com.jeremyfeinstein.slidingmenu.lib.SlidingMenu>

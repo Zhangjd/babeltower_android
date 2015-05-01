@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp" >
+
+    <ImageView
+        android:id="@+id/chatlist_image_user"
+        android:layout_width="40dip"
+        android:layout_height="40dip"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/babeltower_icon" />
+
+    <TextView
+        android:id="@+id/chatlist_text_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/chatlist_image_user"
+        android:layout_marginLeft="50dip"
+        android:layout_toLeftOf="@id/chatlist_image_user"
+        android:background="@drawable/babeltower_chatlist_user"
+        android:paddingBottom="18dip"
+        android:paddingLeft="5dp"
+        android:paddingRight="25dp"
+        android:paddingTop="13dip"
+        android:textColor="@color/grey" />
+
+</RelativeLayout>

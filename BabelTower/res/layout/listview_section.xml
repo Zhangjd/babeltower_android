@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EEEEEE"
     android:fitsSystemWindows="true"
     android:orientation="vertical" >
 
@@ -11,11 +10,11 @@
         android:id="@+id/section_content_list_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:divider="#E8E8E8"
-        android:dividerHeight="1px"
-        ptr:ptrAnimationStyle="flip"
+        ptr:ptrAnimationStyle="rotate"
+        ptr:ptrDrawable="@drawable/babeltower_anim_4"
         ptr:ptrHeaderBackground="#505050"
         ptr:ptrHeaderTextColor="#9fa0a0" >
+
     </com.handmark.pulltorefresh.library.PullToRefreshListView>
 
 </LinearLayout>

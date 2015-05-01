@@ -26,11 +26,11 @@
                 android:startColor="#9944BC49"
                 android:type="linear" />
 
-            <corners
+            <!-- <corners
                 android:bottomLeftRadius="5dip"
                 android:bottomRightRadius="5dip"
                 android:topLeftRadius="5dip"
-                android:topRightRadius="5dip" />
+                android:topRightRadius="5dip" /> -->
         </shape>
     </item>
 

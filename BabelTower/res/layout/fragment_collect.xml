@@ -8,7 +8,6 @@
         android:id="@+id/collect_fragment_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#ffefefef"
         android:padding="18dp"
         android:text="@string/main_news_text"
         android:textColor="#ff000000"
@@ -19,9 +18,10 @@
         android:id="@+id/collect_list_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#ffefefef"
-        ptr:ptrAnimationStyle="flip"
-        ptr:ptrHeaderTextColor="#000000" >
+        ptr:ptrAnimationStyle="rotate"
+        ptr:ptrDrawable="@drawable/babeltower_anim_4"
+        ptr:ptrHeaderBackground="#505050"
+        ptr:ptrHeaderTextColor="#9fa0a0" >
     </com.handmark.pulltorefresh.library.PullToRefreshListView>
 
 </LinearLayout>

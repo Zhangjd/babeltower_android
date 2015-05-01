@@ -9,24 +9,25 @@
 
     <ImageButton
         android:id="@+id/back_button"
-        android:layout_width="41.9dp"
-        android:layout_height="32.4dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_width="17dp"
+        android:layout_height="17dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="1dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
-        android:src="@drawable/babeltower_back" />
+        android:src="@drawable/back_selector2" />
 
     <TextView
         android:id="@+id/header_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/back_button"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="18dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:text="@string/header_name"
-        android:textColor="@color/grey"
-        android:textSize="18sp" />
+        android:textColor="#505050"
+        android:textSize="17sp" />
 
 </RelativeLayout>

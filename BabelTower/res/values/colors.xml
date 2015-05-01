@@ -11,6 +11,9 @@
     <color name="bbt">#FF44BC49</color>
     
     <color name="black2">#1e1e1e</color>
-    <color name="light_grey">#D7D7D7</color>
+    <color name="light_grey">#E5E5E5</color>
+    <color name="very_light_grey">#F0F0F0</color>
+    
+    <color name="rippelColor">#999999</color>
 
 </resources>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bbt.babeltower"
-    android:versionCode="040"
-    android:versionName="0.4.0" > <!-- 升级时请在此修改对应的版本码和版本编号 ,并在strings.xml修改关于界面显示的版本 -->
+    android:versionCode="050"
+    android:versionName="0.5.0" > <!-- 升级时请在此修改对应的版本码和版本编号 ,并在strings.xml修改关于界面显示的版本 -->
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -32,7 +32,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name="com.bbt.babeltower.activity.SplashScreen" >
+        <activity android:name="com.bbt.babeltower.activity.SplashScreen" 
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

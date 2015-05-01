@@ -2,35 +2,45 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:background="@drawable/mysetting_selector"
+    android:orientation="vertical" xmlns:app="http://schemas.android.com/apk/res/com.bbt.babeltower">
 
-    <!--
-         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal" >
-    -->
-
-    <TextView
-        android:id="@+id/setting_name"
-        android:layout_width="wrap_content"
+    <com.bbt.babeltower.layout.RippleView
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
-        android:paddingTop="16dp"
-        android:paddingLeft="25dp"
-        android:textSize="18sp"
-        android:textColor="#000000" />
+        app:rv_color="#999999" >
 
-    <!-- </LinearLayout> -->
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
 
+            <TextView
+                android:id="@+id/setting_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:paddingLeft="18dp"
+                android:paddingTop="16dp"
+                android:textColor="#1C1C1C"
+                android:textSize="16sp" />
 
-    <!--
-         <TextView
-        android:visibility="invisible"
-        android:id="@+id/setting_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#000000" />
-    -->
+            <ImageView
+                android:id="@+id/setting_update_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="26.0dip"
+                android:src="@drawable/babeltower_has_update"
+                android:visibility="invisible" />
+        </RelativeLayout>
+    </com.bbt.babeltower.layout.RippleView>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="18.0dip"
+        android:layout_marginRight="18.0dip"
+        android:background="#A0A0A0" />
 
 </LinearLayout>

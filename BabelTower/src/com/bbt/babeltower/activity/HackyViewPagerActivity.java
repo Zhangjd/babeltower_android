@@ -87,6 +87,8 @@ public class HackyViewPagerActivity extends Activity {
 		mViewPager.setAdapter(mImageAdapter);
 		actionBar.setTitle(title + "(" + (mViewPager.getCurrentItem() + 1) + "/"
 				+ photoItems.size() + ")");
+
+		// 页面改变的监听器
 		mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
 			@Override
@@ -186,8 +188,7 @@ public class HackyViewPagerActivity extends Activity {
 			if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) { // SD卡正常挂载
 				File sdCardDir = Environment.getExternalStorageDirectory();// 获取SDCard目录
 				FileOutputStream outStream = null;
-				String name = "/BabelTower/" + UUID.randomUUID().toString()
-						+ ".png";
+				String name = "/BabelTower/" + UUID.randomUUID().toString() + ".png";
 				try {
 					File saveFile = new File(sdCardDir, name);
 					if (!saveFile.getParentFile().exists()) {

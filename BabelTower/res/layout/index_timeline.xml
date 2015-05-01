@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/listview_main"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ffefefef"
+        ptr:ptrAnimationStyle="rotate"
+        ptr:ptrDrawable="@drawable/babeltower_anim_4"
+        ptr:ptrHeaderBackground="#51585d"
+        ptr:ptrHeaderTextColor="#9fa0a0" >
+    </com.handmark.pulltorefresh.library.PullToRefreshListView>
+
+</LinearLayout>

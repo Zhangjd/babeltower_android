@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import com.avos.avoscloud.LogUtil.log;
 import com.bbt.babeltower.R;
-import com.bbt.babeltower.activity.MainActivity;
 import com.bbt.babeltower.adapter.ListPostAdapter;
 import com.bbt.babeltower.base.ApiUrl;
 import com.bbt.babeltower.base.Netroid;
@@ -33,6 +32,7 @@ import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,13 +61,12 @@ public class SectionFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.view = inflater.inflate(R.layout.fragment_section, container, false);
-		MainActivity.setMenuTouchModeToMargin();
+		// MainActivity.setMenuTouchModeToMargin();
 
 		viewPager = (ViewPager) view.findViewById(R.id.section_viewpager);
 		pagerTabStrip = (PagerTabStrip) view.findViewById(R.id.section_pagertabstrip);
 		pagerTabStrip.setTabIndicatorColor(getResources().getColor(R.color.green));
 		pagerTabStrip.setDrawFullUnderline(false);
-		pagerTabStrip.setTextSpacing(50);// 不起作用?
 
 		pagerAdapter = new PagerAdapter() {
 
@@ -163,7 +162,7 @@ public class SectionFragment extends Fragment {
 
 	@Override
 	public void onDestroyView() {
-		MainActivity.setMenuTouchModeToFullscreen();
+		// MainActivity.setMenuTouchModeToFullscreen();
 		super.onDestroyView();
 	}
 
@@ -189,7 +188,8 @@ public class SectionFragment extends Fragment {
 			SectionFragment theFragment = mFragment.get();
 			View currentView = theFragment.viewList.get(0);
 			ListPostAdapter listPostAdapter = theFragment.adapterList.get("0");
-			if(listPostAdapter.getCount()>0)return;
+			if (listPostAdapter.getCount() > 0)
+				return;
 			PullToRefreshListView mListView = (PullToRefreshListView) currentView
 					.findViewById(R.id.section_content_list_view);
 			mListView.setMode(Mode.PULL_FROM_START);
@@ -203,6 +203,9 @@ public class SectionFragment extends Fragment {
 
 		listView = (PullToRefreshListView) view.findViewById(R.id.section_content_list_view);
 		listView.setMode(Mode.BOTH);
+		listView.getRefreshableView().setDivider(null);
+		listView.getLoadingLayoutProxy().setRefreshingLabel(
+				getResources().getString(R.string.waiting_tips));
 
 		listPostAdapter = new ListPostAdapter(getActivity());
 		adapterList.put(idstr, listPostAdapter);
@@ -223,6 +226,11 @@ public class SectionFragment extends Fragment {
 
 			@Override
 			public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+				// 显示最近一次刷新的时间
+				String label = DateUtils.formatDateTime(getActivity(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
+								| DateUtils.FORMAT_ABBREV_ALL);
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
 
 				String targetURL = ApiUrl.BABIETA_BASE_URL + ApiUrl.BABIETA_CONTENT_LIST
 						+ "?content_type=" + content_type[Integer.valueOf(idstr)];
@@ -291,8 +299,6 @@ public class SectionFragment extends Fragment {
 								try {
 									if (response.has("status") && response.getInt("status") == 0) {
 										String jsonString = response.toString();
-										// 缓存
-										S.put(getActivity(), "section" + idstr, jsonString);
 										LinkedList<PostBean> postBeans = PostBean.parseSection(
 												jsonString, getActivity()); // 在这里解析
 										if (postBeans.size() == 0)

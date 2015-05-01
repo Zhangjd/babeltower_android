@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EEEEEE"
+    android:background="#FFFFFF"
     android:fitsSystemWindows="true"
     android:orientation="vertical" >
 
@@ -15,7 +15,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/include1"
-        android:layout_marginBottom="50dp"
         android:fadingEdge="vertical"
         android:scrollbars="vertical" >
 
@@ -37,21 +36,31 @@
                 android:id="@+id/special_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginBottom="20px"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="48px"
                 android:textColor="#000000"
-                android:textSize="30sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/special_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="15dp"
-                android:textColor="#969696" />
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:textColor="#000000"
+                android:lineSpacingMultiplier="1.2"
+                android:textSize="12sp" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="6.0dip"
+                android:layout_marginLeft="18dip"
+                android:layout_marginRight="18dip"
+                android:layout_marginTop="18dip"
+                android:background="#000000" />
 
             <ListView
                 android:id="@+id/special_subcontents_listview"
@@ -60,9 +69,5 @@
             </ListView>
         </LinearLayout>
     </ScrollView>
-
-    <include
-        android:id="@+id/id_webview_bottombar"
-        layout="@layout/webview_bottombar" />
 
 </RelativeLayout>

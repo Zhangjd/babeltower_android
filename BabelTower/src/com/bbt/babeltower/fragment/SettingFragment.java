@@ -15,6 +15,7 @@ import com.bbt.babeltower.base.Util;
 import com.duowan.mobile.netroid.Listener;
 import com.duowan.mobile.netroid.NetroidError;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
+import com.gc.materialdesign.widgets.SnackBar;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -92,6 +93,8 @@ public class SettingFragment extends Fragment {
 					mProgressDialog.setIndeterminate(false);
 					mProgressDialog.setCancelable(true);
 					mProgressDialog.setCanceledOnTouchOutside(false);
+					mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
+							R.drawable.myprogressbar));
 					mProgressDialog.show();
 
 					String targetURL = ApiUrl.BABIETA_VERSION_CHECK;
@@ -110,26 +113,14 @@ public class SettingFragment extends Fragment {
 										if (Integer.valueOf(ver) > currVer) {
 											mProgressDialog.hide();
 
-											ContextThemeWrapper themedContext;
-											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-												themedContext = new ContextThemeWrapper(
-														getActivity(),
-														android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
-											} else {
-												themedContext = new ContextThemeWrapper(
-														getActivity(),
-														android.R.style.Theme_Light_NoTitleBar);
-											}
-											AlertDialog.Builder builder = new AlertDialog.Builder(
-													themedContext);
-											alertDialog = builder.create();
-											alertDialog.setMessage("检测到新版本:"
-													+ response.getString("version") + "需要下载吗?");
-											alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-													"确定", new DialogInterface.OnClickListener() {
+											SnackBar snackbar = new SnackBar(getActivity(),
+													"检测到新版本\n版本号:" + response.getString("version")
+															+ "\n更新说明: "
+															+ response.getString("description"),
+													"下载", new View.OnClickListener() {
+
 														@Override
-														public void onClick(DialogInterface arg0,
-																int arg1) {
+														public void onClick(View v) {
 															Intent intent = new Intent();
 															intent.setAction("android.intent.action.VIEW");
 															Uri content_url = Uri
@@ -138,15 +129,8 @@ public class SettingFragment extends Fragment {
 															startActivity(intent);
 														}
 													});
-											alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,
-													"取消", new DialogInterface.OnClickListener() {
-														@Override
-														public void onClick(DialogInterface arg0,
-																int arg1) {
-
-														}
-													});
-											alertDialog.show();
+											snackbar.setDismissTimer(5000);
+											snackbar.show();
 										} else {
 											mProgressDialog.hide();
 											Util.showToast(getActivity(), "当前已经是最新版本");
@@ -162,9 +146,8 @@ public class SettingFragment extends Fragment {
 
 								@Override
 								public void onError(NetroidError error) {
-									String data = error.getMessage();
-									Log.d("network error", data);
 									Util.showToast(getActivity(), "网络错误,请稍后重试");
+									mProgressDialog.hide();
 								}
 							});
 					// 设置请求标识，这个标识可用于终止该请求时传入的Key

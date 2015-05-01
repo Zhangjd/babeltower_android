@@ -20,7 +20,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/text_include"
-            android:layout_marginBottom="5dp" />
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:scrollbars="none" />
     </RelativeLayout>
 
     <ImageButton
@@ -28,8 +31,8 @@
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_gravity="right|bottom"
-        android:layout_marginBottom="26dp"
-        android:layout_marginRight="21dp"
+        android:layout_marginBottom="35.5dp"
+        android:layout_marginRight="16dp"
         android:background="@drawable/selector_up" />
 
     <ImageButton
@@ -37,8 +40,8 @@
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_gravity="right|bottom"
-        android:layout_marginBottom="26dp"
-        android:layout_marginRight="21dp"
+        android:layout_marginBottom="35.5dp"
+        android:layout_marginRight="18dp"
         android:background="@drawable/selector_fullscreen"
         android:visibility="gone" />
 
