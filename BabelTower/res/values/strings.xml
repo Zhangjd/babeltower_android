@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">巴别塔</string>
-    <string name="babeltower_version_name">v0.5 Beta</string>
+    <string name="babeltower_version_name">v1.0.0</string>
     <string name="webview_bottombar_pageview">Pageview </string>
     <string name="webview_bottombar_like">Like </string>
     <string name="webview_bottombar_initial_count">0</string>
@@ -30,12 +30,13 @@
     <string name="waiting_tips">稍等片刻(*/ω＼*)</string>
     <string name="feedback_babieta_content_hint">有什么想告诉我们的?</string>
     <string name="feedback_babieta_contact_hint">联系方式(可选)</string>
-    <string name="slidingmenu_bottomtext">巴别塔Beta
+    <string name="slidingmenu_bottomtext">巴别塔
 \n百步梯学生创新中心
 \n诚意出品
 </string>
 	<string name="version_history">
- v0.5 Beta (2015-4-30) : 适配xxhdpi和xhdpi两种分辨率
+  v1.0.0 (2015-5-2) : 新版UI设计
+\n v0.5 Beta (2015-4-30) : 适配xxhdpi和xhdpi两种分辨率
 \n v0.4 Alpha (2015-4-18) : 基本功能开发完成
 \n----------------------------------
 \n Developer
@@ -44,7 +45,7 @@
 \n Zhang Zongke
 \n Xian Qiming
 	</string>
-    <string name="open_source_licenses">*BabelTower for Android
+    <string name="open_source_licenses">*Babel for Android
 \n
 \n*Developed by BBT R&amp;D center
 \n

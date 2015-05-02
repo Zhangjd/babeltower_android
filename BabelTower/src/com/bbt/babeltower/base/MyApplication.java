@@ -43,8 +43,8 @@ public class MyApplication extends Application {
 
 	private void initLeanCloud() {
 		// 初始化LeanCloud
-		AVOSCloud.initialize(this, "8tz2rhws2xs9x3kg00omc6x0t21gv58utzmuf9vtme1ogjz1",
-				"jij190is0jclhevgbzltml1ex62n4bigcbmbc4h6sj87cwvt");
+		AVOSCloud.initialize(this, "aqvkhxqrq6wsnn1f0453kumpc91ecp4njl06plqo2y1qav34",
+				"5ua6tpo0lkm4uo8git32k32t6zp94gdx9y4kkkb5fnwjsywt");
 		// 启用崩溃错误统计
 		AVAnalytics.enableCrashReport(this.getApplicationContext(), true);
 		// 保存 installation 到服务器

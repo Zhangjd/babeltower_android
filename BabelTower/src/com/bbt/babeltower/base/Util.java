@@ -8,16 +8,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +24,6 @@ import com.bbt.babeltower.activity.SpecialActivity;
 import com.bbt.babeltower.activity.WebViewActivity;
 import com.bbt.babeltower.bean.PostBean;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
@@ -57,7 +53,7 @@ public class Util {
 	public static SlidingMenu initSlidingMenu(Activity context) {
 		@SuppressWarnings("deprecation")
 		int screenWidth = context.getWindowManager().getDefaultDisplay().getWidth();
-		int menuWidth = (int) (screenWidth * 0.389);
+		int menuWidth = (int) (screenWidth * 0.667);
 		
 		SlidingMenu slidingMenu = new SlidingMenu(context);
 		slidingMenu.setMode(SlidingMenu.LEFT); // 设置菜单模式
@@ -66,23 +62,25 @@ public class Util {
 		slidingMenu.attachToActivity(context, SlidingMenu.SLIDING_CONTENT); // 将SlidingMenu连接到Activity
 		slidingMenu.setMenu(R.layout.slidemenu_left); // 设置菜单layout
 		slidingMenu.setShadowDrawable(R.drawable.shadow); // 设置阴影
-		slidingMenu.setShadowWidth(15); // 设置阴影宽度
+		slidingMenu.setShadowWidth(1); // 设置阴影宽度
 		slidingMenu.setFadeEnabled(true);
 		slidingMenu.setFadeDegree(0.8f); // 设置菜单刚滑出时候的渐变度
 		slidingMenu.setBehindOffset(screenWidth-menuWidth); // 设置侧滑栏完全展开之后，距离另外一边的距离(pixels)
 
 		// 左上角的视差效果
-		final ImageButton switchButton = (ImageButton) context.findViewById(R.id.header_but);
-		final LayoutParams params = (LayoutParams) switchButton.getLayoutParams();
-		final Context ct = context;
-		CanvasTransformer mTransformer = new CanvasTransformer() {
-			@Override
-			public void transformCanvas(Canvas canvas, float percentOpen) {
-				params.width = dip2px(ct, 16 - 11 * percentOpen);
-				switchButton.setLayoutParams(params);
-			}
-		};
-		slidingMenu.setBehindCanvasTransformer(mTransformer);
+		// final ImageButton switchButton = (ImageButton)
+		// context.findViewById(R.id.header_but);
+		// final LayoutParams params = (LayoutParams)
+		// switchButton.getLayoutParams();
+		// final Context ct = context;
+		// CanvasTransformer mTransformer = new CanvasTransformer() {
+		// @Override
+		// public void transformCanvas(Canvas canvas, float percentOpen) {
+		// params.width = dip2px(ct, 16 - 11 * percentOpen);
+		// switchButton.setLayoutParams(params);
+		// }
+		// };
+		// slidingMenu.setBehindCanvasTransformer(mTransformer);
 
 		return slidingMenu;
 	}
@@ -239,7 +237,7 @@ public class Util {
 			SystemBarTintManager tintManager = new SystemBarTintManager(activity);
 			// 激活状态栏设置
 			tintManager.setStatusBarTintEnabled(true);
-			tintManager.setStatusBarTintColor(Color.parseColor("#5c5c5c"));
+			tintManager.setStatusBarTintColor(Color.parseColor("#000000"));
 			return true;
 		} else {
 			return false;

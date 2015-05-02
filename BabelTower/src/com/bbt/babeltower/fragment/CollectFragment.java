@@ -67,7 +67,7 @@ public class CollectFragment extends Fragment {
 		listView.getRefreshableView().setDivider(null);
 		listView.getRefreshableView().setVerticalScrollBarEnabled(false);
 		listView.setMode(Mode.DISABLED); // 收藏夹关闭上下拉刷新
-		listPostAdapter = new ListPostAdapter(getActivity());
+		listPostAdapter = new ListPostAdapter(getActivity(), 1);
 		listView.setAdapter(listPostAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override

@@ -27,7 +27,7 @@ public class SplashScreen extends Activity {
         }
         
 		Handler x = new Handler();  
-        x.postDelayed(new splashhandler(), 1000);  
+        x.postDelayed(new splashhandler(), 1500);  
 	}
 	
 	class splashhandler implements Runnable{    

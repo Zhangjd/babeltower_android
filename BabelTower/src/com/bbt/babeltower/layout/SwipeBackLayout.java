@@ -2,9 +2,8 @@ package com.bbt.babeltower.layout;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import com.bbt.babeltower.R;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -101,6 +100,7 @@ public class SwipeBackLayout extends FrameLayout {
 		return super.onInterceptTouchEvent(ev);
 	}
 
+	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
@@ -186,6 +186,7 @@ public class SwipeBackLayout extends FrameLayout {
 		super.dispatchDraw(canvas);
 		if (mShadowDrawable != null && mContentView != null) {
 
+			// ’⁄’÷
 			int left = 0 - viewWidth;
 			int right = 0;
 			int top = mContentView.getTop();
@@ -195,12 +196,16 @@ public class SwipeBackLayout extends FrameLayout {
 			myShadow.setAlpha((int) alpha);
 			myShadow.draw(canvas);
 
-			int shadow_left = mContentView.getLeft() - mShadowDrawable.getIntrinsicWidth();
-			int shadow_right = shadow_left + mShadowDrawable.getIntrinsicWidth();
-			int shadow_top = mContentView.getTop();
-			int shadow_bottom = mContentView.getBottom();
-			mShadowDrawable.setBounds(shadow_left, shadow_top, shadow_right, shadow_bottom);
-			mShadowDrawable.draw(canvas);
+			// “ı”∞
+			// int shadow_left = mContentView.getLeft() -
+			// mShadowDrawable.getIntrinsicWidth();
+			// int shadow_right = shadow_left +
+			// mShadowDrawable.getIntrinsicWidth();
+			// int shadow_top = mContentView.getTop();
+			// int shadow_bottom = mContentView.getBottom();
+			// mShadowDrawable.setBounds(shadow_left, shadow_top, shadow_right,
+			// shadow_bottom);
+			// mShadowDrawable.draw(canvas);
 		}
 	}
 

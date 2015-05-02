@@ -15,14 +15,14 @@
         style="@style/textShadow"
         android:id="@+id/view_page_title"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="27dp"
         android:layout_gravity="bottom"
-        android:gravity="bottom"
-        android:paddingBottom="8dp"
-        android:paddingLeft="18dp"
-        android:paddingRight="18dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:scaleType="fitXY"
         android:textColor="#FFFFFF"
-        android:textSize="17sp" />
+        android:background="#99000000"
+        android:textSize="12sp" />
 
 </FrameLayout>

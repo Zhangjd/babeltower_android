@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/menu_list_layout"
         android:layout_width="fill_parent"
-        android:layout_height="54dp"
+        android:layout_height="66dp"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
@@ -39,6 +39,6 @@
         android:id="@+id/menu_list_divider"
         android:layout_width="fill_parent"
         android:layout_height="1px"
-        android:background="#A0A0A0" />
+        android:background="@color/babel_gray_b" />
 
 </LinearLayout>

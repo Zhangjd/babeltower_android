@@ -15,19 +15,17 @@ import com.bbt.babeltower.base.Util;
 import com.duowan.mobile.netroid.Listener;
 import com.duowan.mobile.netroid.NetroidError;
 import com.duowan.mobile.netroid.request.JsonObjectRequest;
+import com.gc.materialdesign.widgets.Dialog;
 import com.gc.materialdesign.widgets.SnackBar;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +39,6 @@ public class SettingFragment extends Fragment {
 	private ListView listView = null;
 	private SettingAdapter settingAdapter = null;
 	private ProgressDialog mProgressDialog = null;
-	private AlertDialog alertDialog = null;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,41 +47,25 @@ public class SettingFragment extends Fragment {
 		listView = (ListView) view.findViewById(R.id.setting_list);
 		settingAdapter = new SettingAdapter(getActivity());
 		listView.setAdapter(settingAdapter);
+		listView.setDivider(null);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				switch (position) {
 				case 0: // clear cache
-					ContextThemeWrapper themedContext;
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-						themedContext = new ContextThemeWrapper(getActivity(),
-								android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
-					} else {
-						themedContext = new ContextThemeWrapper(getActivity(),
-								android.R.style.Theme_Light_NoTitleBar);
-					}
-					AlertDialog.Builder builder = new AlertDialog.Builder(themedContext);
-					alertDialog = builder.create();
-					alertDialog.setMessage("确定要清除缓存吗?");
-					alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "确定",
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
-									S.clear(getActivity()); // 清理SharedPreferences
-									MainActivity.mainFragment.initOnCreate(); // 清空首页ListView
-									Util.showToast(getActivity(), "清理成功");
-								}
-							});
-					alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "取消",
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface arg0, int arg1) {
+					Dialog dialog = new Dialog(getActivity(), "确定要清理缓存吗?", "");
+					dialog.addCancelButton("取消");
+					dialog.setOnAcceptButtonClickListener(new View.OnClickListener() {
 
-								}
-							});
-
-					alertDialog.show();
+						@Override
+						public void onClick(View v) {
+							S.clear(getActivity()); // 清理SharedPreferences
+							MainActivity.mainFragment.initOnCreate(); // 清空首页ListView
+							Util.showToast(getActivity(), "清理成功");
+						}
+					});
+					dialog.show();
 					break;
 				case 1: // check for updates
 					mProgressDialog = new ProgressDialog(getActivity(),
@@ -93,8 +74,8 @@ public class SettingFragment extends Fragment {
 					mProgressDialog.setIndeterminate(false);
 					mProgressDialog.setCancelable(true);
 					mProgressDialog.setCanceledOnTouchOutside(false);
-					mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
-							R.drawable.myprogressbar));
+					// mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
+					// R.drawable.myprogressbar));
 					mProgressDialog.show();
 
 					String targetURL = ApiUrl.BABIETA_VERSION_CHECK;

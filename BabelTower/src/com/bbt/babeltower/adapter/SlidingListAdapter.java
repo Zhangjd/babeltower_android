@@ -4,17 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.bbt.babeltower.R;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 public class SlidingListAdapter extends BaseAdapter {
@@ -36,14 +32,7 @@ public class SlidingListAdapter extends BaseAdapter {
 	@SuppressLint("ViewHolder")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// View view = super.getView(position, convertView, parent);
-
-		if (position == 2) { // 中间空白那一项,没有波纹效果
-			convertView = LayoutInflater.from(context).inflate(
-					R.layout.slidemenu_left_list_noripple, parent, false);
-		} else {
-			convertView = LayoutInflater.from(context).inflate(resource, parent, false);
-		}
+		convertView = LayoutInflater.from(context).inflate(resource, parent, false);
 
 		TextView text = (TextView) convertView.findViewById(R.id.menu_list_text);
 		text.setText((String) data.get(position).get("text"));
@@ -53,25 +42,10 @@ public class SlidingListAdapter extends BaseAdapter {
 		LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.menu_list_layout);
 		if (selectedPosition == position) {
 			layout.setBackgroundResource(R.drawable.slidemenu_item_selected);
-			text.setTextColor(Color.rgb(255, 255, 255));
+			text.setTextColor(context.getResources().getColor(R.color.black));
 		} else {
 			layout.setBackgroundResource(R.drawable.slidemenu_item_normal);
-			text.setTextColor(Color.rgb(80, 80, 80));
-		}
-
-		LayoutParams lp = (LayoutParams) layout.getLayoutParams();
-		if (position == 2) {
-			lp.height = lp.height * 60 / 112;
-			layout.setLayoutParams(lp);
-			View divider = (View) convertView.findViewById(R.id.menu_list_divider);
-			divider.setVisibility(View.GONE);
-		} else {
-			WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-			@SuppressWarnings("deprecation")
-			int screenWidth = wm.getDefaultDisplay().getWidth();
-			int menuWidth = (int) (screenWidth * 0.389);
-			lp.height = menuWidth * 85 / 280;
-			layout.setLayoutParams(lp);
+			text.setTextColor(context.getResources().getColor(R.color.babel_gray_a));
 		}
 
 		return convertView;
@@ -90,13 +64,5 @@ public class SlidingListAdapter extends BaseAdapter {
 	@Override
 	public long getItemId(int position) {
 		return position;
-	}
-
-	@Override
-	public boolean isEnabled(int position) {
-		if (position == 2) {
-			return false;
-		}
-		return super.isEnabled(position);
 	}
 }

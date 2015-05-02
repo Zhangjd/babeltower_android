@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class ListPostAdapter extends BaseAdapter {
@@ -37,6 +36,7 @@ public class ListPostAdapter extends BaseAdapter {
 	private TextView publisherTextView;
 	private TextView timeTextView;
 	private DisplayImageOptions options;
+	private int cellFlag = 0; //决定是否全部为小cell
 
 	public ListPostAdapter(Context context) {
 		this.context = context;
@@ -51,6 +51,22 @@ public class ListPostAdapter extends BaseAdapter {
 	public ListPostAdapter(Context context, LinkedList<PostBean> postBeans) {
 		this.postBeans = postBeans;
 		this.context = context;
+		this.options = new DisplayImageOptions.Builder().showImageForEmptyUri(R.drawable.ic_empty)
+				.showImageOnFail(R.drawable.ic_error).resetViewBeforeLoading(true)
+				.cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY)
+				.bitmapConfig(Bitmap.Config.RGB_565).considerExifParams(true)
+				.displayer(new FadeInBitmapDisplayer(300)).build();
+	}
+
+	public ListPostAdapter(Context context, int cellFlag) {
+		this.context = context;
+		this.cellFlag = cellFlag;
+		this.options = new DisplayImageOptions.Builder().showImageForEmptyUri(R.drawable.ic_empty)
+				.showImageOnFail(R.drawable.ic_error).resetViewBeforeLoading(true)
+				.cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY)
+				.bitmapConfig(Bitmap.Config.RGB_565).considerExifParams(true)
+				.displayer(new FadeInBitmapDisplayer(300)).build();
+		this.postBeans = new LinkedList<PostBean>();
 	}
 
 	@Override
@@ -72,24 +88,11 @@ public class ListPostAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		PostBean postBean = postBeans.get(position);
 		String imageURL;
-		if (postBean.getContentType().equals("album")) {
+		if (postBean.getContentType().equals("album") && cellFlag == 0) {
 			convertView = LayoutInflater.from(context).inflate(R.layout.list_item_big_cell, parent,
 					false);
 			imageURL = postBean.getHeaderImageUrl();
 			imageView = (ImageView) convertView.findViewById(R.id.post_list_image);
-			// 改变ViewPager高度按16:9
-			imageView.post(new Runnable() {
-				@Override
-				public void run() {
-					int width = imageView.getWidth();
-					if (width == 0)
-						return;
-					int height = width * 9 / 16;
-					LayoutParams lp = (LayoutParams) imageView.getLayoutParams();
-					lp.height = height;
-					imageView.setLayoutParams(lp);
-				}
-			});
 		} else {
 			convertView = LayoutInflater.from(context).inflate(R.layout.list_item_small_cell,
 					parent, false);

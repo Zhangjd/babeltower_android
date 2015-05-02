@@ -15,5 +15,11 @@
     <color name="very_light_grey">#F0F0F0</color>
     
     <color name="rippelColor">#999999</color>
+    
+    
+    <color name="babel_orange">#f8b62d</color>
+    <color name="babel_gray_a">#666666</color> <!-- 字 -->
+    <color name="babel_gray_b">#999999</color> <!-- 分割线 -->
+    <color name="babel_gray_c">#e6e6e6</color> <!-- 反馈 -->
 
 </resources>

@@ -13,17 +13,17 @@
             android:id="@+id/slidingmenu_logo"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="81.6dp"
-            android:layout_marginTop="69.6dp"
+            android:layout_marginBottom="60dp"
+            android:layout_marginTop="40dp"
             android:focusable="false" >
 
             <Button
                 android:id="@+id/slidingmenu_logo_img"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="66.7dp"
+                android:layout_height="66dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/babeltower_slidemenu_logo" />
+                android:background="@drawable/babel_logo_menu" />
         </RelativeLayout>
 
         <fragment
@@ -44,7 +44,7 @@
             android:lineSpacingMultiplier="1"
             android:paddingBottom="10dp"
             android:text="@string/slidingmenu_bottomtext"
-            android:textColor="#AAAAAA"
+            android:textColor="@color/babel_gray_a"
             android:textSize="12sp" />
     </RelativeLayout>
 

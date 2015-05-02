@@ -34,6 +34,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class AlbumWebViewActivity extends SwipeBackActivity {
@@ -54,8 +55,8 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 
 	private ImageButton likeButton;
 	private ImageButton collectButton;
-	private ImageButton backButton;
 	private ImageButton floatActionButton;
+	private RelativeLayout area_switch;
 
 	private int collectFlag = 0;
 	private boolean likeFlag = false;
@@ -143,8 +144,8 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 								Netroid.getRequestQueue().cancelAll(REQUESTS_TAG);
 							}
 						});
-						mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
-								R.drawable.myprogressbar));
+						// mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
+						// R.drawable.myprogressbar));
 						mProgressDialog.show();
 					}
 
@@ -157,7 +158,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 					@Override
 					public void onError(NetroidError error) {
 						super.onError(error);
-						Util.showToast(AlbumWebViewActivity.this, "网络开小差了,不如再试试吧~");
+						Util.showToast(AlbumWebViewActivity.this, "网络不给力~请检查网络哦");
 					}
 				});
 		request.setTag(REQUESTS_TAG);
@@ -170,7 +171,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 	protected void onResume() {
 		super.onResume();
 		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
-		titleTextView.setText("");
+		titleTextView.setText("返回");
 	}
 
 	// 注入JS函数监听
@@ -230,7 +231,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 	}
 
 	private void initEventsRegister() {
-		this.backButton = (ImageButton) findViewById(R.id.back_button);
+		this.area_switch = (RelativeLayout) findViewById(R.id.header_switch_area);
 		this.floatActionButton = (ImageButton) findViewById(R.id.float_action_button_up);
 		this.likeButton = (ImageButton) findViewById(R.id.webview_like);
 		this.collectButton = (ImageButton) findViewById(R.id.webview_collect);
@@ -273,7 +274,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 			}
 		});
 
-		backButton.setOnClickListener(new View.OnClickListener() {
+		area_switch.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				finish();
@@ -321,7 +322,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 			if (status) {
 				likeFlag = false;
 				likeButton.setImageResource(R.drawable.babeltower_like_off);
-				Util.showToast(AlbumWebViewActivity.this, "已取消点赞");
+				// Util.showToast(AlbumWebViewActivity.this, "已取消点赞");
 			} else {
 				log.w("取消点赞失败");
 			}
@@ -339,7 +340,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 			likeFlag = true;
 			likeButton.setImageResource(R.drawable.babeltower_like_on);
 			S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
-			Util.showToast(AlbumWebViewActivity.this, "Nice!");
+			Util.showToast(AlbumWebViewActivity.this, "喜欢成功");
 		}
 	}
 
@@ -378,7 +379,7 @@ public class AlbumWebViewActivity extends SwipeBackActivity {
 			if (status) {
 				collectFlag = 0;
 				collectButton.setImageResource(R.drawable.babeltower_collect_off);
-				Util.showToast(AlbumWebViewActivity.this, "已取消收藏");
+				// Util.showToast(AlbumWebViewActivity.this, "已取消收藏");
 			} else {
 				log.w("取消收藏失败");
 			}

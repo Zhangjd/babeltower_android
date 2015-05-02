@@ -1,7 +1,5 @@
 package com.bbt.babeltower.adapter;
 
-import com.avos.avoscloud.feedback.Comment;
-import com.bbt.babeltower.R;
 import com.bbt.babeltower.base.MyApplication;
 
 import android.content.Context;
@@ -9,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
 
 public class FeedbackAdapter extends BaseAdapter {
 	Context context;
@@ -37,20 +34,25 @@ public class FeedbackAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Comment comment = (Comment) getItem(position);
-		String content = comment.getContent();
-		TextView textView = null;
-		
-		if (comment.getCommentType().equals(Comment.CommentType.USER)) {
-			convertView = LayoutInflater.from(context).inflate(R.layout.chatlist_user, parent,
-					false);
-			textView = (TextView) convertView.findViewById(R.id.chatlist_text_user);
-		} else if (comment.getCommentType().equals(Comment.CommentType.DEV)) {
-			convertView = LayoutInflater.from(context).inflate(R.layout.chatlist_dev, parent,
-					false);
-			textView = (TextView) convertView.findViewById(R.id.chatlist_text_dev);
-		}
-		textView.setText(content);
+		// Comment comment = (Comment) getItem(position);
+		// String content = comment.getContent();
+		// TextView textView = null;
+		//
+		// if (comment.getCommentType().equals(Comment.CommentType.USER)) {
+		// convertView =
+		// LayoutInflater.from(context).inflate(R.layout.chatlist_user, parent,
+		// false);
+		// textView = (TextView)
+		// convertView.findViewById(R.id.chatlist_text_user);
+		// } else if (comment.getCommentType().equals(Comment.CommentType.DEV))
+		// {
+		// convertView =
+		// LayoutInflater.from(context).inflate(R.layout.chatlist_dev, parent,
+		// false);
+		// textView = (TextView)
+		// convertView.findViewById(R.id.chatlist_text_dev);
+		// }
+		// textView.setText(content);
 
 		return convertView;
 	}

@@ -6,17 +6,21 @@ import com.bbt.babeltower.base.Util;
 import com.bbt.babeltower.fragment.MainFragment;
 import com.bbt.babeltower.layout.SwipeBackLayout;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
+import android.widget.ImageView.ScaleType;
 
 public class MainActivity extends FragmentActivity {
 
@@ -25,7 +29,8 @@ public class MainActivity extends FragmentActivity {
 
 	private static SlidingMenu slidingMenu;
 	protected SwipeBackLayout layout;
-
+	private ImageButton imageButton;
+	private Matrix matrix = new Matrix();
 	private long exitTime = System.currentTimeMillis();
 
 	@Override
@@ -35,6 +40,32 @@ public class MainActivity extends FragmentActivity {
 
 		setContentView(R.layout.activity_main);
 		slidingMenu = Util.initSlidingMenu(this);
+
+		imageButton = (ImageButton) findViewById(R.id.header_but);
+		imageButton.setScaleType(ScaleType.MATRIX);
+		// 打开菜单后变成箭头
+		slidingMenu.setOnOpenedListener(new SlidingMenu.OnOpenedListener() {
+
+			@Override
+			public void onOpened() {
+				imageButton.setScaleType(ScaleType.FIT_XY);
+				imageButton.setImageResource(R.drawable.babel_back);
+			}
+		});
+		// 旋转icon
+		CanvasTransformer mTransformer = new CanvasTransformer() {
+			@Override
+			public void transformCanvas(Canvas canvas, float percentOpen) {
+				if (percentOpen > 0) {
+					imageButton.setScaleType(ScaleType.MATRIX);
+					imageButton.setImageResource(R.drawable.babeltower_menu_toggle);
+					matrix.postRotate((float) (percentOpen * 6), imageButton.getWidth() / 2,
+							imageButton.getHeight() / 2);
+					imageButton.setImageMatrix(matrix);
+				}
+			}
+		};
+		slidingMenu.setBehindCanvasTransformer(mTransformer);
 		switchFragment(MainActivity.mainFragment);
 		initHeaderButtonSwitch(); // 顶部按钮切换菜单
 	}
@@ -83,17 +114,11 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	public void initHeaderButtonSwitch() {
-		ImageButton button = (ImageButton) findViewById(R.id.header_but);
-		button.setOnClickListener(new View.OnClickListener() {
+		RelativeLayout area_switch = (RelativeLayout) findViewById(R.id.header_switch_area);
+		area_switch.setOnClickListener(new View.OnClickListener() {
+
 			@Override
-			public void onClick(View arg0) {
-				slidingMenu.toggle();
-			}
-		});
-		TextView textView = (TextView) findViewById(R.id.header_textview);
-		textView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
+			public void onClick(View v) {
 				slidingMenu.toggle();
 			}
 		});

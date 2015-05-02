@@ -34,6 +34,7 @@ import android.webkit.WebView;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -43,9 +44,9 @@ public class WebViewActivity extends SwipeBackActivity {
 
 	private ImageButton floatActionButton_up; // 悬浮按键-返回顶部
 	private ImageButton floatActionButton_fullscreen; // 悬浮按键-全屏
-	private ImageButton backButton;
 	private ImageButton likeButton;
 	private ImageButton collectButton;
+	private RelativeLayout area_switch;
 	private ProgressDialog mProgressDialog;
 
 	private int id = 0;
@@ -63,7 +64,7 @@ public class WebViewActivity extends SwipeBackActivity {
 	private boolean likeFlag = false;
 
 	private final String REQUESTS_TAG = "special_request";
-	
+
 	private CountTimeThread mCountTimeThread;
 	private MyHandler mHandler = new MyHandler(this);
 
@@ -87,7 +88,7 @@ public class WebViewActivity extends SwipeBackActivity {
 		description = bundle.getString("description", " ");
 
 		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
-		titleTextView.setText("");
+		titleTextView.setText("返回");
 
 		this.initEventsRegister();
 
@@ -160,7 +161,7 @@ public class WebViewActivity extends SwipeBackActivity {
 					@Override
 					public void onError(NetroidError error) {
 						super.onError(error);
-						Util.showToast(WebViewActivity.this, "网络开小差了,不如再试试吧~");
+						Util.showToast(WebViewActivity.this, "网络不给力~请检查网络哦");
 					}
 
 					@Override
@@ -178,8 +179,8 @@ public class WebViewActivity extends SwipeBackActivity {
 								Netroid.getRequestQueue().cancelAll(REQUESTS_TAG);
 							}
 						});
-						mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
-								R.drawable.myprogressbar));
+						// mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
+						// R.drawable.myprogressbar));
 						mProgressDialog.show();
 					}
 
@@ -197,7 +198,7 @@ public class WebViewActivity extends SwipeBackActivity {
 		if (VideoActivity.getPhoneAndroidSDK() >= 14) {// 4.0 需打开硬件加速
 			getWindow().setFlags(0x1000000, 0x1000000);
 		}
-		
+
 		startCountTimeThread();
 	}
 
@@ -222,7 +223,7 @@ public class WebViewActivity extends SwipeBackActivity {
 
 	private void initEventsRegister() {
 
-		this.backButton = (ImageButton) findViewById(R.id.back_button);
+		this.area_switch = (RelativeLayout) findViewById(R.id.header_switch_area);
 		this.floatActionButton_up = (ImageButton) findViewById(R.id.float_action_button_up);
 		this.floatActionButton_fullscreen = (ImageButton) findViewById(R.id.float_action_button_fullscreen);
 		this.likeButton = (ImageButton) findViewById(R.id.webview_like);
@@ -269,7 +270,7 @@ public class WebViewActivity extends SwipeBackActivity {
 			}
 		});
 
-		backButton.setOnClickListener(new View.OnClickListener() {
+		area_switch.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
@@ -330,7 +331,7 @@ public class WebViewActivity extends SwipeBackActivity {
 			if (status) {
 				likeFlag = false;
 				likeButton.setImageResource(R.drawable.babeltower_like_off);
-				Util.showToast(WebViewActivity.this, "已取消点赞");
+				// Util.showToast(WebViewActivity.this, "已取消点赞");
 			} else {
 				log.w("取消点赞失败");
 			}
@@ -348,7 +349,7 @@ public class WebViewActivity extends SwipeBackActivity {
 			likeFlag = true;
 			likeButton.setImageResource(R.drawable.babeltower_like_on);
 			S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
-			Util.showToast(WebViewActivity.this, "Nice!");
+			Util.showToast(WebViewActivity.this, "喜欢成功");
 		}
 	}
 
@@ -387,7 +388,7 @@ public class WebViewActivity extends SwipeBackActivity {
 			if (status) {
 				collectFlag = 0;
 				collectButton.setImageResource(R.drawable.babeltower_collect_off);
-				Util.showToast(WebViewActivity.this, "已取消收藏");
+				// Util.showToast(WebViewActivity.this, "已取消收藏");
 			} else {
 				log.w("取消收藏失败");
 			}
@@ -409,14 +410,13 @@ public class WebViewActivity extends SwipeBackActivity {
 				S.addStringSet(getApplicationContext(), "collected_list", created_at);
 				S.addStringSet(getApplicationContext(), "collected_list", updated_at);
 
-				Util.showToast(WebViewActivity.this, "已收藏");
+				Util.showToast(WebViewActivity.this, "收藏成功");
 			} else {
 				log.w("收藏失败");
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * 开始启动线程控制按钮组件的显示.
 	 */
@@ -424,13 +424,13 @@ public class WebViewActivity extends SwipeBackActivity {
 		mCountTimeThread = new CountTimeThread(3);
 		mCountTimeThread.start();
 	}
-	
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			// 重置mControllButtonLayout已经显示的时间
 			mCountTimeThread.reset();
-			
+
 			boolean isVisible = (floatActionButton_up.getVisibility() == View.VISIBLE);
 			if (!isVisible) {
 				// 当有按下事件时,如果控件不可见,则使其可见.
@@ -443,12 +443,12 @@ public class WebViewActivity extends SwipeBackActivity {
 
 	// 隐藏悬浮按钮
 	private void hide() {
-		if(content_type.equals("video")) return;
+		if (content_type.equals("video"))
+			return;
 		floatActionButton_up.setVisibility(View.INVISIBLE);
 	}
 
 	// 自动隐藏按钮的一个handler
-	
 
 	public static class MyHandler extends Handler {
 

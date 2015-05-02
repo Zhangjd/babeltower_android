@@ -65,7 +65,7 @@ public class SectionFragment extends Fragment {
 
 		viewPager = (ViewPager) view.findViewById(R.id.section_viewpager);
 		pagerTabStrip = (PagerTabStrip) view.findViewById(R.id.section_pagertabstrip);
-		pagerTabStrip.setTabIndicatorColor(getResources().getColor(R.color.green));
+		pagerTabStrip.setTabIndicatorColor(getResources().getColor(R.color.babel_orange));
 		pagerTabStrip.setDrawFullUnderline(false);
 
 		pagerAdapter = new PagerAdapter() {

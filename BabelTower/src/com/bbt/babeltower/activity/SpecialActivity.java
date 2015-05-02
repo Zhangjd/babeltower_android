@@ -35,6 +35,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 //专题activity
@@ -48,7 +49,7 @@ public class SpecialActivity extends SwipeBackActivity {
 	private ProgressDialog mProgressDialog;
 	private ImageButton likeButton;
 	private ImageButton collectButton;
-	private ImageButton backButton;
+	private RelativeLayout area_switch;
 
 	private String id = "";
 	private String itemURL = "";
@@ -76,7 +77,7 @@ public class SpecialActivity extends SwipeBackActivity {
 		Util.setStatusBarColor(SpecialActivity.this);
 
 		TextView titleTextView = (TextView) findViewById(R.id.header_textview);
-		titleTextView.setText("");
+		titleTextView.setText("返回");
 
 		// get data from bundle
 		Intent intent = getIntent();
@@ -141,8 +142,8 @@ public class SpecialActivity extends SwipeBackActivity {
 
 							}
 						});
-						mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
-								R.drawable.myprogressbar));
+						// mProgressDialog.setIndeterminateDrawable(getResources().getDrawable(
+						// R.drawable.myprogressbar));
 						mProgressDialog.show();
 					}
 
@@ -170,7 +171,7 @@ public class SpecialActivity extends SwipeBackActivity {
 					@Override
 					public void onError(NetroidError error) {
 						super.onError(error);
-						Util.showToast(SpecialActivity.this, "网络开小差了,不如再试试吧~");
+						Util.showToast(SpecialActivity.this, "网络不给力~请检查网络哦");
 					}
 				});
 		// 设置请求标识，这个标识可用于终止该请求时传入的Key
@@ -234,7 +235,7 @@ public class SpecialActivity extends SwipeBackActivity {
 	private void initEventsRegister() {
 		this.likeButton = (ImageButton) findViewById(R.id.webview_like);
 		this.collectButton = (ImageButton) findViewById(R.id.webview_collect);
-		this.backButton = (ImageButton) findViewById(R.id.back_button);
+		this.area_switch = (RelativeLayout) findViewById(R.id.header_switch_area);
 
 		// find collections
 		String[] strings = S.getStringSet(getApplicationContext(), "collected_list");
@@ -272,7 +273,7 @@ public class SpecialActivity extends SwipeBackActivity {
 			}
 		});
 
-		backButton.setOnClickListener(new View.OnClickListener() {
+		area_switch.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
@@ -314,7 +315,7 @@ public class SpecialActivity extends SwipeBackActivity {
 			if (status) {
 				likeFlag = false;
 				likeButton.setImageResource(R.drawable.babeltower_like_off);
-				Util.showToast(SpecialActivity.this, "已取消点赞");
+				// Util.showToast(SpecialActivity.this, "已取消点赞");
 			} else {
 				log.w("取消点赞失败");
 			}
@@ -332,7 +333,7 @@ public class SpecialActivity extends SwipeBackActivity {
 			likeFlag = true;
 			likeButton.setImageResource(R.drawable.babeltower_like_on);
 			S.addStringSet(getApplicationContext(), "liked_list", itemURL); // 记录
-			Util.showToast(SpecialActivity.this, "Nice!");
+			Util.showToast(SpecialActivity.this, "喜欢成功");
 		}
 	}
 
@@ -371,7 +372,7 @@ public class SpecialActivity extends SwipeBackActivity {
 			if (status) {
 				collectFlag = 0;
 				collectButton.setImageResource(R.drawable.babeltower_collect_off);
-				Util.showToast(SpecialActivity.this, "已取消收藏");
+				// Util.showToast(SpecialActivity.this, "已取消收藏");
 			} else {
 				log.w("取消收藏失败");
 			}
@@ -393,7 +394,7 @@ public class SpecialActivity extends SwipeBackActivity {
 				S.addStringSet(getApplicationContext(), "collected_list", created_at);
 				S.addStringSet(getApplicationContext(), "collected_list", updated_at);
 
-				Util.showToast(SpecialActivity.this, "已收藏");
+				Util.showToast(SpecialActivity.this, "收藏成功");
 			} else {
 				log.w("收藏失败");
 			}

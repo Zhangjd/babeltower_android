@@ -57,10 +57,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="1px"
                 android:layout_marginBottom="6.0dip"
-                android:layout_marginLeft="18dip"
-                android:layout_marginRight="18dip"
                 android:layout_marginTop="18dip"
-                android:background="#000000" />
+                android:background="@color/babel_gray_b" />
 
             <ListView
                 android:id="@+id/special_subcontents_listview"

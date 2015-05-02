@@ -11,9 +11,9 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         ptr:ptrAnimationStyle="rotate"
-        ptr:ptrDrawable="@drawable/babeltower_anim_4"
-        ptr:ptrHeaderBackground="#505050"
-        ptr:ptrHeaderTextColor="#9fa0a0" >
+        ptr:ptrDrawable="@drawable/babel_logo_dark"
+        ptr:ptrHeaderBackground="@color/white"
+        ptr:ptrHeaderTextColor="@color/babel_gray_b" >
 
     </com.handmark.pulltorefresh.library.PullToRefreshListView>
 

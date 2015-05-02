@@ -16,7 +16,7 @@
         android:layout_height="90.0dip"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/babeltower_about_logo" />
+        android:src="@drawable/babel_logo_about" />
 
     <TextView
         android:id="@+id/about_appname"
@@ -26,7 +26,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
         android:text="@string/app_name"
-        android:textColor="#575757"
+        android:textColor="#1C1C1C"
         android:textSize="18sp" />
 
     <TextView
@@ -37,7 +37,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
         android:text="@string/babeltower_version_name"
-        android:textColor="#575757"
+        android:textColor="#1C1C1C"
         android:textSize="18sp" />
 
     <TextView

@@ -3,19 +3,7 @@
     android:oneshot="false" >
 
     <item
-        android:drawable="@drawable/babeltower_anim_1"
-        android:duration="400"/>
-    <item
-        android:drawable="@drawable/babeltower_anim_2"
-        android:duration="400"/>
-    <item
-        android:drawable="@drawable/babeltower_anim_3"
-        android:duration="400"/>
-    <item
-        android:drawable="@drawable/babeltower_anim_4"
-        android:duration="400"/>
-    <item
-        android:drawable="@drawable/babeltower_anim_5"
-        android:duration="400"/>
+        android:drawable="@drawable/babeltower_menu_toggle"
+        android:duration="5000"/>
 
 </animation-list>

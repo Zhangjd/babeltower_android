@@ -9,11 +9,10 @@
         android:id="@+id/listview_main"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#ffefefef"
         ptr:ptrAnimationStyle="rotate"
-        ptr:ptrDrawable="@drawable/babeltower_anim_4"
-        ptr:ptrHeaderBackground="#51585d"
-        ptr:ptrHeaderTextColor="#9fa0a0" >
+        ptr:ptrDrawable="@drawable/babel_logo_dark"
+        ptr:ptrHeaderBackground="@color/white"
+        ptr:ptrHeaderTextColor="@color/babel_gray_b" >
     </com.handmark.pulltorefresh.library.PullToRefreshListView>
 
 </LinearLayout>

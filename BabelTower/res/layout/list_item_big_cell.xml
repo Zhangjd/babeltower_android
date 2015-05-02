@@ -1,72 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/list_view"
-    android:minHeight="72.0dip" >
+    android:layout_height="207dp"
+    android:background="@drawable/list_view" >
 
     <ImageView
         android:id="@+id/post_list_image"
         android:layout_width="fill_parent"
-        android:layout_height="180.0dip"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="6.0dip"
-        android:layout_marginLeft="18.0dip"
-        android:layout_marginRight="18.0dip"
-        android:layout_marginTop="12.0dip"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="11dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="11dp"
         android:contentDescription="@string/post_list_view_image"
         android:scaleType="centerCrop"
         android:src="@drawable/dark_menu_avatar_bg_mask" />
 
-    <TextView
-        android:id="@+id/post_list_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/post_list_image"
-        android:layout_marginBottom="3.0dip"
-        android:layout_marginLeft="18.0dip"
-        android:layout_marginStart="18.0dip"
-        android:ellipsize="end"
-        android:lines="1"
-        android:textColor="#FF000000"
-        android:textIsSelectable="false"
-        android:textSize="17sp" />
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="27dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="11dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="#99FFFFFF" >
 
-    <TextView
-        android:id="@+id/post_list_publisher"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/post_list_text"
-        android:layout_marginLeft="18.0dip"
-        android:layout_marginStart="18.0dip"
-        android:maxLines="1"
-        android:paddingBottom="12.0dip"
-        android:textColor="#FF000000"
-        android:textSize="11.2sp" />
+        <TextView
+            android:id="@+id/post_list_text"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="9dp"
+            android:layout_marginStart="9dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:textColor="@color/black"
+            android:textIsSelectable="false"
+            android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/post_list_updated_at"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/post_list_text"
-        android:layout_marginEnd="18.0dip"
-        android:layout_marginRight="18.0dip"
-        android:maxLines="1"
-        android:paddingBottom="12.0dip"
-        android:textColor="#FF000000"
-        android:textSize="11.2sp" />
+        <TextView
+            android:id="@+id/post_list_publisher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="9dp"
+            android:layout_marginRight="9dp"
+            android:maxLines="1"
+            android:paddingTop="1dp"
+            android:textColor="@color/black"
+            android:textSize="9.4sp" />
+
+        <TextView
+            android:id="@+id/post_list_updated_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="9dp"
+            android:layout_marginRight="9dp"
+            android:gravity="bottom"
+            android:maxLines="1"
+            android:paddingBottom="1dp"
+            android:textColor="@color/black"
+            android:textSize="9.4sp" />
+    </RelativeLayout>
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="1px"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="18.0dip"
-        android:layout_marginRight="18.0dip"
-        android:background="#000000" />
+        android:layout_gravity="bottom"
+        android:background="@color/babel_gray_b" />
 
-</RelativeLayout>
+</FrameLayout>

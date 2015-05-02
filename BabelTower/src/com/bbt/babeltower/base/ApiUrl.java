@@ -43,8 +43,8 @@ public class ApiUrl {
 	public static String BABIETA_SECTION_CONTENTS = "/v1/sections/{id}/contents";
 
 	// ∞Ê±æºÏ≤È
-	public static String BABIETA_VERSION_CHECK = "http://218.192.166.167/heal/android_version_check.php";
+	public static String BABIETA_VERSION_CHECK = "http://babel.100steps.net/android/version_check.php";
 	// œ¬‘ÿ
-	public static String BABIETA_DOWNLOAD = "http://218.192.166.167/heal/babeltower_android_down.php";
+	public static String BABIETA_DOWNLOAD = "http://babel.100steps.net/android/down.php";
 
 }

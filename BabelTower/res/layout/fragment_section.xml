@@ -3,60 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-    
-<!--     <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="36.0dip"
-        android:background="@color/black2" >
- 
-        <TextView
-            android:id="@+id/text1"
-            android:layout_width="0dip"
-            android:layout_height="fill_parent"
-            android:layout_weight="3.0"
-            android:gravity="center"
-            android:text="文章"
-            android:textColor="#FFFFFF"
-            android:textSize="18.0dip" />
- 
-        <TextView
-            android:id="@+id/text2"
-            android:layout_width="0dip"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:text="图集"
-            android:textColor="#909084"
-            android:textSize="18.0dip" />
- 
-        <TextView
-            android:id="@+id/text3"
-            android:layout_width="0dip"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:text="视频"
-            android:textColor="#909084"
-            android:textSize="18.0dip" />
-        
-        <TextView
-            android:id="@+id/text4"
-            android:layout_width="0dip"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:text="专题"
-            android:textColor="#909084"
-            android:textSize="18.0dip" />
-    </LinearLayout>
- 
-    <ImageView
-        android:id="@+id/cursor"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:scaleType="matrix"
-        android:src="@drawable/babeltower_tab_indicator" /> -->
 
     <android.support.v4.view.ViewPager
         android:id="@+id/section_viewpager"
@@ -69,8 +15,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:background="#505050"
-            android:textColor="@color/white" />
+            android:background="@drawable/babeltower_viewpagerstrap_background"
+            android:textColor="@color/black" />
     </android.support.v4.view.ViewPager>
 
 </LinearLayout>
