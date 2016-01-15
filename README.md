@@ -1,5 +1,9 @@
 ## Babel Tower APP for Android ##
 
+### Note
+
+本项目已不再维护。
+
 ### Introduction ###
 
 巴别塔是华工百步梯新一代新闻系统，以“移动优先”为指导思想开发. 包括 iOS、Android App ，基于 HTML5 的 Mobile Web 和 Ruby on Rails 为框架的后台（包括 CMS 和 API两部分）。
